@@ -271,7 +271,7 @@ PUBLIC W32 ADLIB_UpdateMusic( W32 size, void *buffer )
 
 		if( sqHackLen <= 0 )
 		{
-			return (W32)ptr - (W32)buffer;
+			return (INTPTR)ptr - (INTPTR)buffer;
 		}
 	}
 

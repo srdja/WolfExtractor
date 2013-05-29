@@ -118,7 +118,6 @@ elseif(UNIX)
 		${CMAKE_SOURCE_DIR}/filesys/unix/file_unix.c
 	
 	)
-	set( COMPILER_FLAGS -g -pg -Wall -Wextra -pedantic )
 
 else ()
 

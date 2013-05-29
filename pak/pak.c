@@ -129,7 +129,7 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 
 	zentry->deletefile = 1;
 
-	zentry->uncompressed_size = FS_FileLoad( filename, &data );
+	zentry->uncompressed_size = FS_FileLoad( filename, (void *) &data );
 
 	if( zentry->uncompressed_size == -1 || data == NULL )
 	{
@@ -149,8 +149,8 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 //	Compression
 //
 	c_stream.zalloc = (alloc_func)0;
-    c_stream.zfree = (free_func)0;
-    c_stream.opaque = (voidpf)0;
+	c_stream.zfree = (free_func)0;
+	c_stream.opaque = (voidpf)0;
 
 	err = deflateInit( &c_stream, Z_DEFAULT_COMPRESSION );
 	if( err != Z_OK )
