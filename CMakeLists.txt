@@ -132,3 +132,7 @@ set( HEADER ${env_HEADER} )
 
 
 add_executable( ${EXE_NAME} ${SOURCE} ${HEADER} )
+
+if (UNIX)
+	target_link_libraries( ${EXE_NAME} m ogg vorbis vorbisenc )
+endif ()
