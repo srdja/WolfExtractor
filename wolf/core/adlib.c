@@ -74,18 +74,18 @@ PRIVATE FM_OPL *hAdLib = NULL;
 
 
 /**
- * \brief Start adlib hardware. 
+ * \brief Start adlib hardware.
  * \return 1 on success, otherwise 0.
  * \note Must call ADLIB_Shutdown() when done.
  */
 PUBLIC wtBoolean ADLIB_Init( W32 freq )
-{ 
+{
     hAdLib = OPLCreate( OPL_TYPE_YM3812, OPL_INTERNAL_FREQ, freq );
-    
+
     if( hAdLib == NULL )
     {
 		fprintf( stderr, "[ADLIB_Init]: Could not create AdLib OPL Emulator\n" );
-        
+
 		return false;
     }
 
@@ -96,7 +96,7 @@ PUBLIC wtBoolean ADLIB_Init( W32 freq )
 }
 
 /**
- * \brief Shutdown adlib hardware. 
+ * \brief Shutdown adlib hardware.
  */
 PUBLIC void ADLIB_Shutdown( void )
 {
@@ -104,17 +104,17 @@ PUBLIC void ADLIB_Shutdown( void )
 }
 
 /**
- * \brief Set Adlib FX instruction. 
- * \param[in] inst Valid pointer to Instrument structure. 
+ * \brief Set Adlib FX instruction.
+ * \param[in] inst Valid pointer to Instrument structure.
  * \return Nothing.
  */
 PRIVATE void ADLIB_SetFXInst( Instrument *inst )
 {
     W8   c, m;
-    
+
     m = modifiers[ 0 ];
 	c = carriers[ 0 ];
-	
+
 
 	OPLWrite( hAdLib, m + alChar, inst->mChar );
 	OPLWrite( hAdLib, m + alScale, inst->mScale );
@@ -126,13 +126,13 @@ PRIVATE void ADLIB_SetFXInst( Instrument *inst )
 	OPLWrite( hAdLib, c + alAttack, inst->cAttack );
 	OPLWrite( hAdLib, c + alSus, inst->cSus );
 	OPLWrite( hAdLib, c + alWave, inst->cWave );
-	
+
     OPLWrite( hAdLib, alFeedCon, 0 );
 }
 
 /**
- * \brief Decode adlib sound.  
- * \param[in] inst Valid pointer to Instrument structure. 
+ * \brief Decode adlib sound.
+ * \param[in] inst Valid pointer to Instrument structure.
  * \param[out] length Length of decoded sound data in bytes.
  * \return On success true, otherwise false.
  */
@@ -155,10 +155,10 @@ PUBLIC void *ADLIB_DecodeSound( AdLibSound *sound, W32 *length )
 	alLengthLeft = *((PW32)sound->common.length);
 	alLengthLeft = LittleLong( alLengthLeft );
 
-	
+
 	alSound = sound->data;
 
-	
+
 	len = alLengthLeft * 157 * 2; // 157[.5] = 22050 / 140
 
 	buffer = (void *) MM_MALLOC( len );
@@ -166,9 +166,9 @@ PUBLIC void *ADLIB_DecodeSound( AdLibSound *sound, W32 *length )
 
     OPLWrite( hAdLib, alFreqL, 0 );
 	OPLWrite( hAdLib, alFreqH, 0 );
-	
+
 	ADLIB_SetFXInst( &inst );
-	
+
     while( alLengthLeft )
 	{
 		s = *alSound++;
@@ -190,7 +190,7 @@ PUBLIC void *ADLIB_DecodeSound( AdLibSound *sound, W32 *length )
 	}
 
 	*length = len;
-		
+
 	return (void *)buffer;
 }
 
@@ -200,7 +200,7 @@ PUBLIC void *ADLIB_DecodeSound( AdLibSound *sound, W32 *length )
 
 
 
-PRIVATE W16 *sqHackPtr; 
+PRIVATE W16 *sqHackPtr;
 PRIVATE W32 sqHackLen;
 PRIVATE W32 sqHackTime;
 PRIVATE W32 alTimeCount;
@@ -219,7 +219,7 @@ musicGroup_t *music;
 
 
 /**
- * \brief Setup music decoder. 
+ * \brief Setup music decoder.
  * \param[in] musbuffer musicGroup_t data structure.
  * \return Nothing.
  */
@@ -234,8 +234,8 @@ PUBLIC void ADLIB_LoadMusic( void *musbuffer )
 }
 
 /**
- * \brief Decode adlib music sound. 
- * \param[in] size Number of bytes to write to buffer. 
+ * \brief Decode adlib music sound.
+ * \param[in] size Number of bytes to write to buffer.
  * \param[in,out] buffer Hold decoded sound data.
  * \return 1 on success, otherwise 0.
  * \note Data written to buffer is 44100/16/mono
@@ -244,7 +244,7 @@ PUBLIC W32 ADLIB_UpdateMusic( W32 size, void *buffer )
 {
 	W8 *al;		//[2] {a, v} (register, value)
 	W16 *ptr;
-	W32 n;				
+	W32 n;
 	W32 AdLibTicks;
 
 
@@ -271,7 +271,7 @@ PUBLIC W32 ADLIB_UpdateMusic( W32 size, void *buffer )
 
 		if( sqHackLen <= 0 )
 		{
-			return (INTPTR)ptr - (INTPTR)buffer;
+			return (INT_PTR)ptr - (INT_PTR)buffer;
 		}
 	}
 
@@ -279,14 +279,14 @@ PUBLIC W32 ADLIB_UpdateMusic( W32 size, void *buffer )
 }
 
 /**
- * \brief Get music length in milliseconds. 
+ * \brief Get music length in milliseconds.
  * \param[in] musbuffer  musicGroup_t data structure.
  * \param[in,out] buffer Hold decoded sound data.
  * \return On success length in milliseconds.
  */
 PUBLIC W32 ADLIB_getLength( void *musbuffer )
 {
-	W16 *ptr; 
+	W16 *ptr;
 	W16 length;
 	W32 Time;
 	W32 alTime;
