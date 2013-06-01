@@ -22,8 +22,8 @@
 /**
  * \file platform.h
  * \brief System dependant #defines and macros.
- * \author Michael Liebscher 
- * \date 2005-2007 
+ * \author Michael Liebscher
+ * \date 2005-2007
  */
 
 #ifndef __PLATFORM_H__
@@ -32,7 +32,7 @@
 
 
 
-// Windows 
+// Windows
 /////////////////////////////////////////////////
 
 #if defined(WINDOWS) || defined(_WINDOWS) || defined(_WIN32) || defined(_WIN64)
@@ -44,7 +44,7 @@
 #endif
 
 
-// Linux 
+// Linux
 /////////////////////////////////////////////////
 
 #if defined(linux) || defined(__linux__)
@@ -56,7 +56,7 @@
 #endif
 
 
-// BSD 
+// BSD
 /////////////////////////////////////////////////
 
 #if defined(__FreeBSD__)
@@ -84,11 +84,11 @@
 #endif
 
 
-// Solaris 
+// Solaris
 /////////////////////////////////////////////////
 
 #if defined(sun) || defined(__sun__)
-	
+
 	#define PLATFORM_NAME "Solaris"
 
 	#define	PATH_SEP '/'
@@ -96,7 +96,7 @@
 #endif
 
 
-// MAC 
+// MAC
 /////////////////////////////////////////////////
 
 #if defined( macintosh )
@@ -119,7 +119,7 @@
 #endif
 
 
-// Other 
+// Other
 /////////////////////////////////////////////////
 
 #ifndef PLATFORM_NAME
@@ -191,7 +191,7 @@
 */
 #ifdef OS_WINDOWS
 
-	#include <BaseTsd.h>
+	#include <basetsd.h>
 
 	typedef UINT8		W8,	*PW8;
 	typedef INT8		SW8,    *PSW8;
