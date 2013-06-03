@@ -105,7 +105,7 @@ PUBLIC SW32 FS_FileOpen( const char *filename, FILE **file )
 PUBLIC SW32 FS_FileLoad( const char *path, void **buffer )
 {
 	FILE	*fhandle;
-	W8		*buf;
+	W8	*buf;
 	SW32	length;
 
 	buf = NULL;
