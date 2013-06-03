@@ -413,7 +413,10 @@ PUBLIC void *wolfcore_ReduxGFX( const W32 chunkId, void *data, W32 *width, W32 *
         scaledImgBuf = MM_MALLOC( (width_out * 2) * (height_out * 2) * bytesPerPixel );
         if( scaledImgBuf == NULL )
         {
-    	    return NULL;
+		if( buffer ) {
+			MM_FREE( buffer );
+		}
+		return NULL;
         }
 
 

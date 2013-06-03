@@ -234,7 +234,7 @@ PUBLIC SW32 GFXFile_cacheChunk( const W32 chunkId )
 	W32		compressed_size; /* size of compressed chunk in bytes */
 	void	*buffer;
 	W32		next_chunk;
-    SW32	chunkSize;
+	SW32	chunkSize;
 
 	
 	if( graphic_segments[ chunkId ] )
@@ -341,6 +341,10 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 	grstarts = (PSW32) MM_MALLOC( filesize );
 	if( grstarts == NULL )
 	{
+		if( handle ) {
+			fclose( handle );
+		}
+
 		return false;
 	}
   
