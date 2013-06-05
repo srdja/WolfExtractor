@@ -26,7 +26,7 @@
  */
 
 #include <string.h>
-
+#include <zlib.h>
 
 #include "../memory/memory.h"
 #include "../common/platform.h"
@@ -35,8 +35,6 @@
 #include "../common/linklist.h"
 #include "../filesys/file.h"
 #include "../zip/zip.h"
-
-#include "../zlib/zlib.h"
 
 #include "../wolf/wolfcore_decoder.h"
 

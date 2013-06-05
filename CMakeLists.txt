@@ -1,5 +1,4 @@
-
-project (WolfExtractor) 
+project ( WolfExtractor ) 
 
 
 # Required cmake version
@@ -9,15 +8,11 @@ set( EXE_NAME "WolfExtractor" )
 
 
 set( env_SOURCE 
-	${CMAKE_SOURCE_DIR}/zlib/adler32.c
 	${CMAKE_SOURCE_DIR}/wolf/core/adlib.c
 	${CMAKE_SOURCE_DIR}/wolf/blakestone/blakestone.c
 	${CMAKE_SOURCE_DIR}/wolf/blakestone/blakestone_pal.c
-	${CMAKE_SOURCE_DIR}/zlib/compress.c	
 	${CMAKE_SOURCE_DIR}/wolf/corridor/corridor.c
 	${CMAKE_SOURCE_DIR}/wolf/corridor/corridor_pal.c
-	${CMAKE_SOURCE_DIR}/zlib/crc32.c
-	${CMAKE_SOURCE_DIR}/zlib/deflate.c
 	${CMAKE_SOURCE_DIR}/filesys/file.c
 	${CMAKE_SOURCE_DIR}/filesys/file_string.c
 	${CMAKE_SOURCE_DIR}/filesys/file_time.c	
@@ -43,7 +38,6 @@ set( env_SOURCE
 	${CMAKE_SOURCE_DIR}/wolf/spear/spear_name.c
 	${CMAKE_SOURCE_DIR}/wolf/spear/spear_pal.c
 	${CMAKE_SOURCE_DIR}/loaders/tga.c
-	${CMAKE_SOURCE_DIR}/zlib/trees.c
 	${CMAKE_SOURCE_DIR}/version.c
 	${CMAKE_SOURCE_DIR}/vorbis/vorbisenc_inter.c
 	${CMAKE_SOURCE_DIR}/loaders/wav.c
@@ -58,7 +52,6 @@ set( env_SOURCE
 	${CMAKE_SOURCE_DIR}/string/wtstring.c
 	${CMAKE_SOURCE_DIR}/string/wtstringnumeric.c
 	${CMAKE_SOURCE_DIR}/zip/zipfile.c
-	${CMAKE_SOURCE_DIR}/zlib/zutil.c
 )
 	
 set( env_HEADER 	
@@ -68,8 +61,6 @@ set( env_HEADER
 	${CMAKE_SOURCE_DIR}/common/common_utils.h
 	${CMAKE_SOURCE_DIR}/console/console.h
 	${CMAKE_SOURCE_DIR}/wolf/corridor/corridor.h
-	${CMAKE_SOURCE_DIR}/zlib/crc32.h
-	${CMAKE_SOURCE_DIR}/zlib/deflate.h
 	${CMAKE_SOURCE_DIR}/filesys/file.h
 	${CMAKE_SOURCE_DIR}/wolf/core/fmopl.h
 	${CMAKE_SOURCE_DIR}/getopt/getopt.h
@@ -89,7 +80,6 @@ set( env_HEADER
 	${CMAKE_SOURCE_DIR}/image/scalebit.h
 	${CMAKE_SOURCE_DIR}/wolf/spear/spear_def.h
 	${CMAKE_SOURCE_DIR}/loaders/tga.h
-	${CMAKE_SOURCE_DIR}/zlib/trees.h
 	${CMAKE_SOURCE_DIR}/vorbis/vorbisenc_inter.h
 	${CMAKE_SOURCE_DIR}/loaders/wav.h
 	${CMAKE_SOURCE_DIR}/wolf/wolfenstein/wolf.h
@@ -97,11 +87,15 @@ set( env_HEADER
 	${CMAKE_SOURCE_DIR}/wolf/wolfcore_decoder.h
 	${CMAKE_SOURCE_DIR}/string/wtstring.h
 	${CMAKE_SOURCE_DIR}/zip/zip.h
-	${CMAKE_SOURCE_DIR}/zlib/zutil.h
 )
 
 
 if ( WIN32 )
+
+	if ( MINGW )
+		set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole -pg -s" )
+		set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g -pg" )
+	endif ()
 
 	set( platform_SOURCE 
 	
@@ -111,6 +105,9 @@ if ( WIN32 )
 	)
 	
 elseif(UNIX)
+
+	set( CMAKE_EXEC_LINK_FLAGS "${CMAKE_EXEC_LINK_FLAGS} -pg -s" )
+	set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g -pg" )
 
 	set( platform_SOURCE 
 	
@@ -132,6 +129,8 @@ set( HEADER ${env_HEADER} )
 
 add_executable( ${EXE_NAME} ${SOURCE} ${HEADER} )
 
-if (UNIX)
-	target_link_libraries( ${EXE_NAME} m ogg vorbis vorbisenc )
+if ( WIN32 )
+	target_link_libraries( ${EXE_NAME} zlibstatic ogg vorbis vorbisenc )
+elseif ( UNIX )
+	target_link_libraries( ${EXE_NAME} m z ogg vorbis vorbisenc )
 endif ()

@@ -27,14 +27,13 @@
  */
 
 #include "wolfcore_decoder.h"
-
+#include <zlib.h>
 
 #include "../common/platform.h"
 #include "../common/common_utils.h"
 #include "../string/wtstring.h"
 #include "../filesys/file.h"
 #include "../memory/memory.h"
-#include "../zlib/zlib.h"
 
 #include "wolfenstein/wolf.h"
 
