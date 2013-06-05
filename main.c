@@ -217,7 +217,7 @@ PUBLIC int main( int argc, char *argv[] )
 	displayVersionMsg();
 
 
-    wolfDataDecipher();
+	wolfDataDecipher();
 
 
 	/* Wait until a key is pressed before shutting down. */

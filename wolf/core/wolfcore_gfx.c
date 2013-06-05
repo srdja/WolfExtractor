@@ -231,9 +231,9 @@ PRIVATE SW32 expandGFXChunk( W32 chunk, const W8 *source )
 PUBLIC SW32 GFXFile_cacheChunk( const W32 chunkId )
 {
 	SW32	file_offset;
-	W32		compressed_size; /* size of compressed chunk in bytes */
+	W32	compressed_size; /* size of compressed chunk in bytes */
 	void	*buffer;
-	W32		next_chunk;
+	W32	next_chunk;
 	SW32	chunkSize;
 
 	

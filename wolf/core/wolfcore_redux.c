@@ -62,22 +62,22 @@ extern W32 _filterScale;
 PUBLIC void *wolfcore_ReduxGFX( const W32 chunkId, void *data, W32 *width, W32 *height,
                                  W32 *chunkChange, W8 *gamePalette, picNum_t *picNum )
 {
-    void *scaledImgBuf;		    /* buffer to hold scaled image data */
-    W32 width_out, height_out;	/* current Width and Height of image */
+	void *scaledImgBuf;		/* buffer to hold scaled image data */
+	W32 width_out, height_out;	/* current Width and Height of image */
     
-    W32 tempW, tempH;		/* temp Width and Height of image */
-    void *tempData;
-    W8 *tempPalette;		/* alternate Palette for image */
-    W8 *buffer;
+	W32 tempW, tempH;		/* temp Width and Height of image */
+	void *tempData;
+	W8 *tempPalette;		/* alternate Palette for image */
+	W8 *buffer;
 	W8 *ptr;
     
-    W32 bytesPerPixel = 4;
+	W32 bytesPerPixel = 4;
 
 	ptr = (PW8) data;
 	buffer = NULL;
 
-    width_out = *width;
-    height_out = *height;
+	width_out = *width;
+	height_out = *height;
 
 	                    
     if( chunkId == picNum->PN_StatusBar )
