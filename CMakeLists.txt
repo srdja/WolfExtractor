@@ -93,7 +93,7 @@ set( env_HEADER
 if ( WIN32 )
 
 	if ( MINGW )
-		set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole -pg -s" )
+		set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mconsole -pg -static -s" )
 		set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g -pg" )
 	endif ()
 
@@ -130,7 +130,7 @@ set( HEADER ${env_HEADER} )
 add_executable( ${EXE_NAME} ${SOURCE} ${HEADER} )
 
 if ( WIN32 )
-	target_link_libraries( ${EXE_NAME} zlibstatic ogg vorbis vorbisenc )
+	target_link_libraries( ${EXE_NAME} vorbis ogg vorbisenc zlibstatic )
 elseif ( UNIX )
 	target_link_libraries( ${EXE_NAME} m z ogg vorbis vorbisenc )
 endif ()
