@@ -185,6 +185,7 @@
 */
 #if defined(_MSC_VER)
 
+	#define HOTSPOT
 	typedef unsigned	__int8		W8,	*PW8;
 	typedef signed		__int8		SW8,    *PSW8;
 	typedef unsigned	__int16		W16,    *PW16;
@@ -200,6 +201,12 @@
 	#endif
 
 #else
+
+	#if defined(__GCC__)
+	#define HOTSPOT __hot__
+	#else
+	#define HOTSPOT
+	#endif
 
 	#include <stdint.h>
 	#include <inttypes.h>

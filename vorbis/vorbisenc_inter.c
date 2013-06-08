@@ -50,7 +50,7 @@ PRIVATE W32 samplesize;
 PRIVATE W8 *ptrCurrent;
 PRIVATE W8 *ptrEnd;
 
-PRIVATE SW32 read_samples( float **buffer, SW32 samples )
+HOTSPOT PRIVATE SW32 read_samples( float **buffer, SW32 samples )
 {
 	SW32 sampbyte = samplesize / 8;
 	SW8 *buf;
@@ -94,31 +94,31 @@ PRIVATE SW32 read_samples( float **buffer, SW32 samples )
 	return realsamples;
 }
 
-PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W32 in_channels, W32 in_samplesize,
+HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W32 in_channels, W32 in_samplesize,
 			   W32 rate, W32 quality, W32 max_bitrate, W32 min_bitrate  )
 {
-	FILE *fp;
-	ogg_stream_state os;
-	ogg_page 		 og;
-	ogg_packet 		 op;
+	FILE			*fp;
+	ogg_stream_state	os;
+	ogg_page 		og;
+	ogg_packet 		op;
 
 	vorbis_dsp_state	vd;
 	vorbis_block		vb;
-	vorbis_info			vi;
+	vorbis_info		vi;
 
-	ogg_packet header_main;
-	ogg_packet header_comments;
-	ogg_packet header_codebooks;
-	SW32 result;
-	W32 serialno = 0;
+	ogg_packet		header_main;
+	ogg_packet		header_comments;
+	ogg_packet		header_codebooks;
+	SW32			result;
+	W32			serialno = 0;
 
-	vorbis_comment comments;
+	vorbis_comment		comments;
 
-	SW32 ret = 0;
-	SW32 eos;
-	W32 samplesdone = 0;
-	W32 packetsdone = 0;
-	W32 bytes_written = 0;
+	SW32			ret = 0;
+	SW32			eos;
+	W32			samplesdone = 0;
+	W32			packetsdone = 0;
+	W32			bytes_written = 0;
 
 
 
