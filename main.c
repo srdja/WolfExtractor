@@ -221,7 +221,6 @@ PUBLIC int main( int argc, char *argv[] )
 
 
 	/* Wait until a key is pressed before shutting down. */
-	printf( "\nPress a key to exit.\n" );
 	CWaitForConsoleKeyInput();
 
 
@@ -231,5 +230,3 @@ PUBLIC int main( int argc, char *argv[] )
 	return 0;
 
 }
-
-

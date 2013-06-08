@@ -21,7 +21,7 @@
 /**
  * \file console_win.c
  * \brief Interface to console window [Windows].
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2006-2013
  * \note When doing a port these functions need to be converted.
  */
@@ -30,7 +30,7 @@
 
 #include <windows.h>
 
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdarg.h>
 
 
@@ -51,7 +51,7 @@ PRIVATE DWORD nOldTitleSize;
 
 WORD wBGColourAttribute = 0;
 
-DWORD saveOldMode; 
+DWORD saveOldMode;
 
 
 extern const char *APPLICATION_STRING;
@@ -60,7 +60,7 @@ extern const char *VERSION_STRING;
 
 /**
  * \brief Initialize hooks to console window
- * \return On success true, otherwise false. 
+ * \return On success true, otherwise false.
  */
 PUBLIC wtBoolean ConsoleWindow_Init( void )
 {
@@ -75,8 +75,8 @@ PUBLIC wtBoolean ConsoleWindow_Init( void )
 	(void)SetConsoleTitle( szNewTitleName );
 
 
-	hConsoleScrnBuffer = GetStdHandle( STD_OUTPUT_HANDLE ); 
-	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE ) 
+	hConsoleScrnBuffer = GetStdHandle( STD_OUTPUT_HANDLE );
+	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE )
 	{
         goto BufferFailed;
 	}
@@ -87,9 +87,9 @@ PUBLIC wtBoolean ConsoleWindow_Init( void )
 	}
 
 
-	
+
 	hStdin = GetStdHandle( STD_INPUT_HANDLE );
-	if( hStdin == INVALID_HANDLE_VALUE ) 
+	if( hStdin == INVALID_HANDLE_VALUE )
 	{
         goto BufferFailed;
 	}
@@ -103,7 +103,7 @@ PUBLIC wtBoolean ConsoleWindow_Init( void )
 	{
          goto BufferFailed;
 	}
-		
+
 
 	return true;
 
@@ -118,7 +118,7 @@ BufferFailed:
 
 /**
  * \brief Remove hooks to console window
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void ConsoleWindow_Shutdown( void )
 {
@@ -146,13 +146,15 @@ PUBLIC void ConsoleWindow_Shutdown( void )
 
 /**
  * \brief Wait for user input on console window
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CWaitForConsoleKeyInput( void )
 {
-	INPUT_RECORD ConInBuf[ 12 ]; 
+	INPUT_RECORD ConInBuf[ 12 ];
 	DWORD cNumRead;
 	DWORD i;
+
+	printf( "\nPress a key to exit.\n" );
 
 	for( ; ; )
 	{
@@ -161,16 +163,16 @@ PUBLIC void CWaitForConsoleKeyInput( void )
 			return;
 		}
 
-		for( i = 0 ; i < cNumRead ; ++i ) 
-        {
-			if( i < 12 && ConInBuf[ i ].EventType == KEY_EVENT ) 
-            {
+		for( i = 0 ; i < cNumRead ; ++i )
+		{
+			if( i < 12 && ConInBuf[ i ].EventType == KEY_EVENT )
+			{
 				return;
 			}
 		}
 
 	}
-	
+
 	return;
 }
 
@@ -179,7 +181,7 @@ PUBLIC void CWaitForConsoleKeyInput( void )
  * \param[in] textColour Text colour [ TC_RED, TC_GREEN, TC_BLUE, TC_WHITE, TC_CYAN, TC_YELLOW, TC_MAGENTA ]
  * \param[in] msg Format control.
  * \param[in] ... Optional arguments.
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CPrintMsg( W32 textColour, const char *msg, ... )
 {
@@ -189,17 +191,17 @@ PUBLIC void CPrintMsg( W32 textColour, const char *msg, ... )
 	WORD wColourAttribute = 0;	/* default is TC_BLACK */
 	DWORD nLength;
 	DWORD nWritten;
-	
-	
+
+
 
 	va_start( pArg, msg );
 	(void)vsnprintf( textbuffer, sizeof( textbuffer ), msg, pArg );
 	va_end( pArg );
-	
+
 	textbuffer[ sizeof( textbuffer ) - 1 ] = '\0';
 
 
-	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE ) 
+	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE )
 	{
 		printf( "%s", textbuffer );
 	}
@@ -245,7 +247,7 @@ PUBLIC void CPrintMsg( W32 textColour, const char *msg, ... )
 
 
 	SetConsoleTextAttribute( hConsoleScrnBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE  );
-	
+
 }
 
 PRIVATE const char progressText[ 4 ] = { '|', '/', '-', '\\' };
@@ -253,14 +255,14 @@ PRIVATE W32 index = 0;
 
 /**
  * \brief Print progress spinner to console output stream.
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CProgressBar( void )
 {
 	DWORD nWritten;
 	CONSOLE_SCREEN_BUFFER_INFO csbInfo;
 
-	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE ) 
+	if( hConsoleScrnBuffer == INVALID_HANDLE_VALUE )
 	{
 		return;
 	}
