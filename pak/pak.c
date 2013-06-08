@@ -326,6 +326,11 @@ PRIVATE wtBoolean Pak_addDirectoryToZipFile( const char *path, FILE *f )
 	do {
 		wt_snprintf( temp, sizeof( temp ), "%s/%s", path, ptr );
 
+		if ( temp[strlen(temp)-1] == '.' )
+		{
+			continue;
+		}
+
 		if( ! FS_CompareFileAttributes( temp, 0, FA_DIR ) )
 		{
 			continue;
