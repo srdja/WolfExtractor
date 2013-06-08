@@ -103,6 +103,8 @@ if ( WIN32 )
 		${CMAKE_SOURCE_DIR}/filesys/win/file_win.c
 	
 	)
+
+	set( LIBS ${LIBS} vorbis ogg vorbisenc zlibstatic )
 	
 elseif(UNIX)
 
@@ -115,6 +117,8 @@ elseif(UNIX)
 		${CMAKE_SOURCE_DIR}/filesys/unix/file_unix.c
 	
 	)
+
+	set( LIBS ${LIBS} m z ogg vorbis vorbisenc )
 
 else ()
 
@@ -129,8 +133,4 @@ set( HEADER ${env_HEADER} )
 
 add_executable( ${EXE_NAME} ${SOURCE} ${HEADER} )
 
-if ( WIN32 )
-	target_link_libraries( ${EXE_NAME} vorbis ogg vorbisenc zlibstatic )
-elseif ( UNIX )
-	target_link_libraries( ${EXE_NAME} m z ogg vorbis vorbisenc )
-endif ()
+target_link_libraries( ${EXE_NAME} ${LIBS} )
