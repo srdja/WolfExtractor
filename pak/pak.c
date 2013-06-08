@@ -21,8 +21,8 @@
 /**
  * \file pak.c
  * \brief Creates PAK files for Wolfenstein 3-D Redux.
- * \author Michael Liebscher 
- * \date 2004-2013 
+ * \author Michael Liebscher
+ * \date 2004-2013
  */
 
 #include <string.h>
@@ -44,7 +44,7 @@
 #define SCRIPT_DIR		"script"
 
 
-PRIVATE char defaultscript[] = 
+PRIVATE char defaultscript[] =
 "\n \
  unbindall\n\n \
  bind 0 \"impulse 0\"\n \
@@ -101,8 +101,8 @@ PRIVATE linkList_t *zipChainLast = NULL;	/* pointer to last element in zipChain 
 
 /**
  * \brief Writes the Local file chunk for a Zip file.
- * \param[in] filename Pointer to a NUL-terminated string that specifies the path of the file to zip. 
- * \param[in,out] fout File stream to add compressed file to. 
+ * \param[in] filename Pointer to a NUL-terminated string that specifies the path of the file to zip.
+ * \param[in,out] fout File stream to add compressed file to.
  * \return On success pointer to zipHead_t structure, otherwise NULL..
  */
 PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
@@ -119,7 +119,7 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 	zentry = (zipHead_t *) MM_MALLOC( sizeof( *zentry ) );
 
 	memset( zentry, 0, sizeof( *zentry ) );
-	
+
 	zentry->versionmadeby = VMB_VFAT;
 	zentry->versionneeded = 20;
 	zentry->disknumstart = 0;
@@ -138,13 +138,13 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 		}
 
 		return NULL;
-	}	
+	}
 
 
 	FS_GetFileAttributes( filename, &fs );
 
 	zentry->timedate = UnixTimeToDosTime( (time_t *)&fs.lastwritetime );
-	
+
 
 //
 //	Compression
@@ -169,15 +169,15 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 	compr = (PW8) MM_MALLOC( zentry->compressed_size );
 
 
-	
-	
+
+
 
 	c_stream.next_out = compr;
 	c_stream.avail_out = (uInt)zentry->compressed_size;
 
 	c_stream.next_in = data;
 	c_stream.avail_in = (uInt)zentry->uncompressed_size;
-	
+
 
 	err = deflate( &c_stream, Z_FINISH );
 	if( err != Z_STREAM_END )
@@ -203,7 +203,7 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 
 	//	When using the deflate method, ZLib adds a 2 byte head
 	//	and a 4 byte tail. The head must be removed for zip
-	//	compatability and the tail is not necessary. 
+	//	compatability and the tail is not necessary.
 	zentry->compressed_size = c_stream.total_out - 6;
 
 //
@@ -256,8 +256,8 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 /**
  * \brief Write central headers for Zip file.
  * \param[in] zipList Chain of zlist structures.
- * \param[in,out] fout File stream to write central header to. 
- * \return On success true, otherwise false. 
+ * \param[in,out] fout File stream to write central header to.
+ * \return On success true, otherwise false.
  */
 PRIVATE wtBoolean Pak_WriteCentralChunk( linkList_t *zipList, FILE *fout )
 {
@@ -282,7 +282,7 @@ PRIVATE wtBoolean Pak_WriteCentralChunk( linkList_t *zipList, FILE *fout )
 		if( ! zip_WriteCentralChunk( tempZipHead, fout ) )
 		{
 			fprintf( stderr, "Error writing central header to zip file\n" );
-			
+
 			return false;
 		}
 
@@ -293,7 +293,7 @@ PRIVATE wtBoolean Pak_WriteCentralChunk( linkList_t *zipList, FILE *fout )
 	if( ! zip_WriteEndChunk( num, central_size, central_offset, 0, NULL, fout ) )
 	{
 		fprintf( stderr, "Error writing end header to zip file\n" );
-		
+
 		return false;
 	}
 
@@ -303,8 +303,8 @@ PRIVATE wtBoolean Pak_WriteCentralChunk( linkList_t *zipList, FILE *fout )
 /**
  * \brief Add directory to zip file.
  * \param[in] path Directory path that will be added to zip file.
- * \param[in,out] f File stream to write compressed files to. 
- * \return On success true, otherwise false. 
+ * \param[in,out] f File stream to write compressed files to.
+ * \return On success true, otherwise false.
  */
 PRIVATE wtBoolean Pak_addDirectoryToZipFile( const char *path, FILE *f )
 {
@@ -320,15 +320,12 @@ PRIVATE wtBoolean Pak_addDirectoryToZipFile( const char *path, FILE *f )
 		wt_strlcat( temp, "/*", sizeof( temp ) );
 	}
 
-	// run findfirst once so we can use findnext in a loop.
-	// This will return the current directory
-	(void) FS_FindFirst( temp );
-	(void) FS_FindNext();
-
 	// Look for files
-	while( (ptr = FS_FindNext()) != NULL )
-	{
+	ptr = FS_FindFirst( temp );
+
+	do {
 		wt_snprintf( temp, sizeof( temp ), "%s/%s", path, ptr );
+
 		if( ! FS_CompareFileAttributes( temp, 0, FA_DIR ) )
 		{
 			continue;
@@ -342,11 +339,11 @@ PRIVATE wtBoolean Pak_addDirectoryToZipFile( const char *path, FILE *f )
 
 		// add new zipHead_t to chain
 		zipChainLast = linkList_addList( zipChainLast, newZipNode );
-	}
+	} while( (ptr = FS_FindNext()) != NULL );
 
 	FS_FindClose();
 
-	return true; 
+	return true;
 }
 
 /**
@@ -368,11 +365,11 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 	z_stream c_stream; /* compression stream */
 
 
-    
-    scriptSize = sizeof( defaultscript ) / sizeof( defaultscript[ 0 ] );
-    
-    defaultscript[ scriptSize - 5 ] = version + 48;
-    
+
+	scriptSize = sizeof( defaultscript ) / sizeof( defaultscript[ 0 ] );
+
+	defaultscript[ scriptSize - 5 ] = version + 48;
+
 	data = (PW8) &defaultscript;
 
 
@@ -391,18 +388,18 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 
 	//FS_GetFileAttributes( filename, &fs );
 
-	zentry->timedate = UnixTimeToDosTime( (time_t *)&fs.lastwritetime );	
+	zentry->timedate = UnixTimeToDosTime( (time_t *)&fs.lastwritetime );
 
 //
 //	Compression
 //
 	c_stream.zalloc = (alloc_func)0;
-    c_stream.zfree = (free_func)0;
-    c_stream.opaque = (voidpf)0;
+	c_stream.zfree = (free_func)0;
+	c_stream.opaque = (voidpf)0;
 
 	err = deflateInit( &c_stream, Z_DEFAULT_COMPRESSION );
 	if( err != Z_OK )
-	{		
+	{
 		MM_FREE( zentry );
 
 		return NULL;
@@ -415,15 +412,15 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 	compr = (PW8) MM_MALLOC( zentry->compressed_size );
 
 
-	
-	
+
+
 
 	c_stream.next_out = compr;
 	c_stream.avail_out = (uInt)zentry->compressed_size;
 
 	c_stream.next_in = data;
 	c_stream.avail_in = (uInt)zentry->uncompressed_size;
-	
+
 
 	err = deflate( &c_stream, Z_FINISH );
 	if( err != Z_STREAM_END )
@@ -436,7 +433,7 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 
 
 	err = deflateEnd( &c_stream );
-    if( err != Z_OK )
+	if( err != Z_OK )
 	{
 		MM_FREE( compr );
 		MM_FREE( zentry );
@@ -447,7 +444,7 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 
 	//	When using the deflate method, ZLib adds a 2 byte head
 	//	and a 4 byte tail. The head must be removed for zip
-	//	compatability and the tail is not necessary. 
+	//	compatability and the tail is not necessary.
 	zentry->compressed_size = c_stream.total_out - 6;
 
 //
@@ -514,7 +511,7 @@ PRIVATE void Pak_DeleteZipFileList( linkList_t *in, wtBoolean deletefile )
 	{
 		printf( "Removing cached files.\n" );
 	}
-	
+
 	tempZipHead = in->element;
 	do
 	{
@@ -530,14 +527,14 @@ PRIVATE void Pak_DeleteZipFileList( linkList_t *in, wtBoolean deletefile )
 			}
 
 			MM_FREE( tempZipHead );
-		}		
+		}
 
 	} while( (tempZipHead = (zipHead_t *)linkList_GetNextElement( in )) );
 
 }
 
 /**
- * \brief Remove cache directories.   
+ * \brief Remove cache directories.
  */
 PUBLIC void RemoveCacheDirectories( )
 {
@@ -565,7 +562,7 @@ PUBLIC wtBoolean PAK_builder( const char *packname, W8 version, wtBoolean delete
 {
 	FILE *fout;
 	zipHead_t *newZipHead;
-    
+
 	printf( "\n\nGenerating pak file (%s)\nThis could take a few minutes.\n", packname );
 
 
@@ -573,9 +570,9 @@ PUBLIC wtBoolean PAK_builder( const char *packname, W8 version, wtBoolean delete
 	if( fout == NULL )
 	{
 		fprintf( stderr, "[PAK_builder]: Could not create file (%s)\n", packname );
-		
+
 		return false;
-	}	
+	}
 
 	zipChainLast = zipChain = linkList_new();
 
@@ -590,35 +587,35 @@ PUBLIC wtBoolean PAK_builder( const char *packname, W8 version, wtBoolean delete
 	{
 		zipChainLast = linkList_addList( zipChainLast, newZipHead );
 	}
-			
+
 
 
 
 	Pak_addDirectoryToZipFile( DIR_MAPS, fout );
 	Pak_addDirectoryToZipFile( DIR_PICS, fout );
 	Pak_addDirectoryToZipFile( DIR_WALLS, fout );
-	Pak_addDirectoryToZipFile( DIR_MUSIC, fout );       
-    
-
-    if( version == 1 )
-    {
-        Pak_addDirectoryToZipFile( DIR_SOD_SPRITES, fout );
-        Pak_addDirectoryToZipFile( DIR_SOD_DSOUND, fout );
-        Pak_addDirectoryToZipFile( DIR_SOD_SOUNDFX, fout );
-    }
-    else
-    {
-        Pak_addDirectoryToZipFile( DIR_SPRITES, fout );
-        Pak_addDirectoryToZipFile( DIR_DSOUND, fout );
-        Pak_addDirectoryToZipFile( DIR_SOUNDFX, fout );
-    }
+	Pak_addDirectoryToZipFile( DIR_MUSIC, fout );
 
 
+	if( version == 1 )
+	{
+		Pak_addDirectoryToZipFile( DIR_SOD_SPRITES, fout );
+		Pak_addDirectoryToZipFile( DIR_SOD_DSOUND, fout );
+		Pak_addDirectoryToZipFile( DIR_SOD_SOUNDFX, fout );
+	}
+	else
+	{
+		Pak_addDirectoryToZipFile( DIR_SPRITES, fout );
+		Pak_addDirectoryToZipFile( DIR_DSOUND, fout );
+		Pak_addDirectoryToZipFile( DIR_SOUNDFX, fout );
+	}
 
-    Pak_addDirectoryToZipFile( "script", fout );
-	
 
-	
+
+	Pak_addDirectoryToZipFile( "script", fout );
+
+
+
 
 	if( ! Pak_WriteCentralChunk( zipChain->next, fout ) )
 	{
@@ -639,19 +636,19 @@ PUBLIC wtBoolean PAK_builder( const char *packname, W8 version, wtBoolean delete
 	// close zip file.
 	fclose( fout );
 
-	
-	
-    // Remove directories
-    if( deleteDirectories )
-    {
-        Pak_DeleteZipFileList( zipChain->next, deleteDirectories );
 
-        RemoveCacheDirectories();
-    }
 
-    (void)linkList_delete( zipChain );
-	zipChainLast = zipChain = NULL;	
-    
+	// Remove directories
+	if( deleteDirectories )
+	{
+		Pak_DeleteZipFileList( zipChain->next, deleteDirectories );
+
+		RemoveCacheDirectories();
+	}
+
+	(void)linkList_delete( zipChain );
+	zipChainLast = zipChain = NULL;
+
 	return true;
 }
 
