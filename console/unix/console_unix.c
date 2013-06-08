@@ -21,13 +21,13 @@
 /**
  * \file console_win.c
  * \brief Interface to console window [UNIX].
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2007
  * \note When doing a port these functions need to be converted.
  */
 
-#include <stdlib.h> 
-#include <stdio.h> 
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdarg.h>
 
 #include "../console.h"
@@ -38,7 +38,7 @@
 
 /**
  * \brief Initialize hooks to console window
- * \return On success true, otherwise false. 
+ * \return On success true, otherwise false.
  */
 PUBLIC wtBoolean ConsoleWindow_Init( void )
 {
@@ -47,7 +47,7 @@ PUBLIC wtBoolean ConsoleWindow_Init( void )
 
 /**
  * \brief Remove hooks to console window
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void ConsoleWindow_Shutdown( void )
 {
@@ -56,7 +56,7 @@ PUBLIC void ConsoleWindow_Shutdown( void )
 
 /**
  * \brief Wait for user input on console window
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CWaitForConsoleKeyInput( void )
 {
@@ -68,7 +68,7 @@ PUBLIC void CWaitForConsoleKeyInput( void )
  * \param[in] textColour Text colour [ TC_RED, TC_GREEN, TC_BLUE, TC_WHITE, TC_CYAN, TC_YELLOW, TC_MAGENTA ]
  * \param[in] msg Format control.
  * \param[in] ... Optional arguments.
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CPrintMsg( W32 textColour, const char *msg, ... )
 {
@@ -78,12 +78,12 @@ PUBLIC void CPrintMsg( W32 textColour, const char *msg, ... )
 	va_start( pArg, msg );
 	(void)vsnprintf( textbuffer, sizeof( textbuffer ), msg, pArg );
 	va_end( pArg );
-	
+
 	textbuffer[ sizeof( textbuffer ) - 1 ] = '\0';
 
 
 	printf( "%s", textbuffer );
-	
+
 }
 
 PRIVATE char progressText[ 4 ] = { '|', '/', '-', '\\' };
@@ -91,7 +91,7 @@ PRIVATE W32 index = 0;
 
 /**
  * \brief Print progress spinner to console output stream.
- * \return Nothing. 
+ * \return Nothing.
  */
 PUBLIC void CProgressBar( void )
 {

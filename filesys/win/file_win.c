@@ -327,7 +327,7 @@ PUBLIC wtBoolean FS_ChangeCurrentDirectory( const char *path )
  */
 PUBLIC char *FS_FindFirst( const char *path )
 {
-    WIN32_FIND_DATA FindFileData;
+	WIN32_FIND_DATA FindFileData;
 
 	if( FindHandle )
 	{
@@ -344,7 +344,7 @@ PUBLIC char *FS_FindFirst( const char *path )
 		return NULL;
 	}
 
-    wt_strlcpy( findFile, FindFileData.cFileName, sizeof( findFile ) );
+	wt_strlcpy( findFile, FindFileData.cFileName, sizeof( findFile ) );
 
 	return findFile;
 }
@@ -357,16 +357,11 @@ PUBLIC char *FS_FindNext( void )
 {
 	WIN32_FIND_DATA FindFileData;
 
-	if( FindHandle == INVALID_HANDLE_VALUE )
+	if( ( FindHandle == INVALID_HANDLE_VALUE ) ||
+		( FindNextFile( FindHandle, &FindFileData ) == 0 ) )
 	{
 		return NULL;
-	}
-
-	if( FindNextFile( FindHandle, &FindFileData ) == 0 )
-	{
-		return NULL;
-	}
-		   
+	}		   
 
     wt_strlcpy( findFile, FindFileData.cFileName, sizeof( findFile ) );
 	
