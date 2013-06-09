@@ -462,7 +462,7 @@ PUBLIC W8 *obverseWall( const W8 *src, W16 width, W16 height )
 	W8 *target;
 	W16 w, h;
 
-	target = (W8 *)MM_MALLOC( width * height );
+	target = (W8 *)MM_MALLOC( (W32) width * (W32) height );
 	if( target == NULL )
 	{
 		printf( "Could not allocate memory block\n" );
