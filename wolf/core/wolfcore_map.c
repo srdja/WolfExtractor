@@ -216,7 +216,7 @@ PUBLIC wtBoolean MapFile_ReduxDecodeMapData( const char *fmaphead, const char *f
 	W32 ceiling;
 	W32 floor;
 	W32 palOffset;
-    W32 temp;
+	W32 temp;
 	float ftime;
 	char *stime;
 	W8 *data;
@@ -231,38 +231,33 @@ PUBLIC wtBoolean MapFile_ReduxDecodeMapData( const char *fmaphead, const char *f
 	}
 
 
-	for( i = 0 ; i < totalMaps ; ++i )
-	{
-        if( fseek( map_file_handle, headerOffsets[ i ], SEEK_SET ) != 0 )
-        {
-            break;
-        }
-
-
+	for( i = 0 ; i < totalMaps ; ++i ) {
+		if( fseek( map_file_handle, headerOffsets[ i ], SEEK_SET ) != 0 ) {
+			break;
+		}
 		wt_snprintf( filename, sizeof( filename ), format, path, i );
 
 		fout = fopen( filename, "wb");
-        if( NULL == fout )
-        {
-            continue;
-        }
+		if( NULL == fout ) {
+			continue;
+		}
 
 
-        // Get ceiling colour
-        palOffset = (ceilingColour[ i ] & 0xff) * 3;
+		// Get ceiling colour
+		palOffset = (ceilingColour[ i ] & 0xff) * 3;
 		ceiling = (palette[ palOffset ] << 16) | (palette[ palOffset + 1 ] << 8) | palette[ palOffset + 2 ];
 
 
 
-        // Get floor colour
+		// Get floor colour
 		palOffset = 0x19 * 3;
 		floor = (palette[ palOffset ] << 16 ) | (palette[ palOffset + 1 ] << 8) | palette[ palOffset + 2 ];
 
 
-        wt_snprintf( musicName, sizeof( musicName ), "%s/%s.ogg", DIR_MUSIC, musicFileName[ i ] );
+		wt_snprintf( musicName, sizeof( musicName ), "%s/%s.ogg", DIR_MUSIC, musicFileName[ i ] );
 
 
-        ftime = parTimes[ i ].time;
+		ftime = parTimes[ i ].time;
 		stime = parTimes[ i ].timestr;
 
 
@@ -428,7 +423,7 @@ PUBLIC wtBoolean MapFile_ReduxDecodeMapData( const char *fmaphead, const char *f
 	MapFile_Shutdown();
 
 
-    printf( "Done\n" );
+	printf( "Done\n" );
 
 
 	return true;

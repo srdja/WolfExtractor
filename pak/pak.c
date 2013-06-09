@@ -141,7 +141,7 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 
 	FS_GetFileAttributes( filename, &fs );
 
-	zentry->timedate = UnixTimeToDosTime( (time_t *)&fs.lastwritetime );
+	zentry->timedate = UnixTimeToDosTime( &fs.lastwritetime );
 
 
 //
@@ -391,7 +391,7 @@ PRIVATE zipHead_t *Pak_addScriptToZipFile( FILE *fout, W8 version )
 
 	//FS_GetFileAttributes( filename, &fs );
 
-	zentry->timedate = UnixTimeToDosTime( (time_t *)&fs.lastwritetime );
+	zentry->timedate = UnixTimeToDosTime( &fs.lastwritetime );
 
 //
 //	Compression

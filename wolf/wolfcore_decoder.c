@@ -233,7 +233,7 @@ const fileCRC_LUT_t ACTIVISION_WL6_LUT[] =
 	{ "VGAHEAD.WL6",    0xAB2B44D3 },
 	{ "VSWAP.WL6",      0xE610C664 },
 
-	NULL
+	{ NULL, 0 }
 };
 
 const fileCRC_LUT_t APOGEE_WL6_LUT[] =
@@ -247,7 +247,7 @@ const fileCRC_LUT_t APOGEE_WL6_LUT[] =
 	{ "VGAHEAD.WL6",    0x27EE37C4 },
 	{ "VSWAP.WL6",      0x859E8FFC },
 
-	NULL
+	{ NULL, 0 }
 };
 
 const fileCRC_LUT_t ID_SOFTWARE_V14_WL6_LUT[] =
@@ -261,7 +261,7 @@ const fileCRC_LUT_t ID_SOFTWARE_V14_WL6_LUT[] =
 	{ "VGAHEAD.WL6",    0x27EE37C4 },
 	{ "VSWAP.WL6",      0x859E8FFC },
 
-	NULL
+	{ NULL, 0 }
 };
 
 const fileCRC_LUT_t SHARE_V10_WL1_LUT[] =
@@ -275,7 +275,7 @@ const fileCRC_LUT_t SHARE_V10_WL1_LUT[] =
 	{ "VGAHEAD.WL1",    0x1343524F },
 	{ "VSWAP.WL1",      0xF97FE230 },
 
-	NULL
+	{ NULL, 0 }
 };
 
 const fileCRC_LUT_t SHARE_V11_WL1_LUT[] =
@@ -289,7 +289,7 @@ const fileCRC_LUT_t SHARE_V11_WL1_LUT[] =
 	{ "VGAHEAD.WL1",    0xD3B22C3C },
 	{ "VSWAP.WL1",      0xBB85F24C },
 
-	NULL
+	{ NULL, 0 }
 };
 
 const fileCRC_LUT_t SHARE_V14_WL1_LUT[] =
@@ -303,7 +303,7 @@ const fileCRC_LUT_t SHARE_V14_WL1_LUT[] =
 	{ "VGAHEAD.WL1",    0xA60A98F0 },
 	{ "VSWAP.WL1",      0x85EFAC55 },
 
-	NULL
+	{ NULL, 0 }
 };
 
 #define WL6_FILE_COUNT  8

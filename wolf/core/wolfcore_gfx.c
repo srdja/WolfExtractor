@@ -21,9 +21,9 @@
 /**
  * \file wolfcore_gfx.c
  * \brief Wolfenstein 3-D GFX file decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2006-2007
- * \note Portion of this code was derived from Wolfenstein 3-D, and was originally written by Id Software, Inc. 
+ * \note Portion of this code was derived from Wolfenstein 3-D, and was originally written by Id Software, Inc.
  */
 
 #include <stdio.h>
@@ -42,7 +42,7 @@ typedef struct
   // 0-255 is a character, > is a pointer to a node
   W16 bit0;
   W16 bit1;
-  	
+
 } huffnode;
 
 
@@ -50,7 +50,7 @@ typedef struct
 {
 	W16 width;
     W16 height;
-	
+
 } pictable_t;
 
 
@@ -102,15 +102,15 @@ PRIVATE SW32 getGFXFilePosition( W32 chunk )
 }
 
 /**
- * \brief Calculate length of compressed graphic chunk. 
+ * \brief Calculate length of compressed graphic chunk.
  * \param[in] chunk Chunk number to calculate file offset.
  * \return The length of the compressed graphic chunk.
  * \note Gets the length of an explicit length chunk (not tiles). The file pointer is positioned so the compressed data can be read in next.
  */
 PRIVATE SW32 getGFXChunkLength( W32 chunk )
-{   
+{
 	fseek( file_handle_gfx, getGFXFilePosition( chunk ) + sizeof( W32 ), SEEK_SET );
-	
+
     return ( getGFXFilePosition( chunk + 1 ) - getGFXFilePosition( chunk ) - 4 );
 }
 
@@ -124,14 +124,14 @@ PRIVATE SW32 getGFXChunkLength( W32 chunk )
  * \return Nothing.
  * \note Uses classic Huffman node tree (not optimized).
  */
-PRIVATE void HuffExpand( const W8 *source, 
-				W8 *destination, 
-				W32 length, 
+PRIVATE void HuffExpand( const W8 *source,
+				W8 *destination,
+				W32 length,
 				huffnode *hufftable )
-{	
+{
 	W32 bx;	/* node pointer */
 	W32 dx;
-	
+
 	W32 ch;	/* high order of CX */
 	W32 cl;	/* low order of CX */
 
@@ -140,37 +140,37 @@ PRIVATE void HuffExpand( const W8 *source,
 
     bx = 254;   /* head node is always node 254 */
 	si = source;
-	di = destination;	 
-	
+	di = destination;
+
 
     ch = *si;   /* Load first byte */
     si++;
     cl = 1;
 
-        
-    do 
+
+    do
     {
         if( (ch & cl) & 0xff )  /* bit set? */
 		{
             /* take bit1 path from node */
-			dx = LittleShort( hufftable[ bx ].bit1 );  
+			dx = LittleShort( hufftable[ bx ].bit1 );
 		}
         else
 		{
 			/* take bit0 path from node */
-            dx = LittleShort( hufftable[ bx ].bit0 );  
+            dx = LittleShort( hufftable[ bx ].bit0 );
 		}
 
-		
+
         cl <<= 1;   /* advance to next bit position */
-        
+
         if( cl & 0x100 )
         {
             ch = *si;   /* Load next byte */
             si++;
             cl = 1;		/* back to first bit */
-        }        
-        
+        }
+
 		if( (cl & 0x100) == 0 )
         {
             if( dx < 256 )
@@ -185,10 +185,10 @@ PRIVATE void HuffExpand( const W8 *source,
             {
                 bx = dx - 256;  /* next node = (huffnode *)code */
             }
-        }        
-        
+        }
+
     } while( length );
-	  
+
 }
 
 
@@ -216,7 +216,7 @@ PRIVATE SW32 expandGFXChunk( W32 chunk, const W8 *source )
 	{
 		return -1;
 	}
-	
+
 	HuffExpand( source, graphic_segments[ chunk ], expanded, grhuffman );
 
     return expanded;
@@ -236,13 +236,13 @@ PUBLIC SW32 GFXFile_cacheChunk( const W32 chunkId )
 	W32	next_chunk;
 	SW32	chunkSize;
 
-	
+
 	if( graphic_segments[ chunkId ] )
 	{
 		return -1;	/* Already in memory */
 	}
 
-	
+
 //
 // Load the chunk into a buffer
 //
@@ -262,7 +262,7 @@ PUBLIC SW32 GFXFile_cacheChunk( const W32 chunkId )
 
 	fseek( file_handle_gfx, file_offset, SEEK_SET );
 
-	
+
 	buffer = MM_MALLOC( compressed_size );
 	if( buffer == NULL )
 	{
@@ -271,7 +271,7 @@ PUBLIC SW32 GFXFile_cacheChunk( const W32 chunkId )
 
 
 	fread( buffer, 1, compressed_size, file_handle_gfx );
-	
+
 	chunkSize = expandGFXChunk( chunkId, buffer );
 
 
@@ -305,14 +305,14 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 		if( ( handle = fopen( wt_strlwr( tempFileName ), "rb" ) ) ==  NULL )
 		{
 			fprintf( stderr, "Could not open file (%s) for read!\n", tempFileName );
-			
+
 			return false;
 		}
 	}
 
 
 	fread( grhuffman, 1, sizeof( grhuffman ), handle );
-	
+
 	fclose( handle );
 
 
@@ -320,7 +320,7 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 
 //
 // Load in the data offsets
-//	
+//
 	wt_strlcpy( tempFileName, headfname, sizeof( tempFileName ) );
 
 	if( (handle = fopen( wt_strupr( tempFileName ), "rb" )) ==  NULL )
@@ -328,7 +328,7 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 		if( (handle = fopen( wt_strlwr( tempFileName ), "rb" )) ==  NULL )
 		{
 			fprintf( stderr, "Could not open file (%s) for read!\n", tempFileName );
-			
+
 			return false;
 		}
 	}
@@ -347,9 +347,9 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 
 		return false;
 	}
-  
+
 	fread( grstarts, 1, filesize, handle );
-	
+
 	fclose( handle );
 
 
@@ -358,18 +358,18 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 //
 
 	wt_strlcpy( tempFileName, graphfname, sizeof( tempFileName ) );
-	
+
 	if( ( file_handle_gfx = fopen( wt_strupr( tempFileName ), "rb" ) ) ==  NULL )
 	{
 		if( ( file_handle_gfx = fopen( wt_strlwr( tempFileName ), "rb" ) ) ==  NULL )
 		{
 			fprintf( stderr, "Could not open file (%s) for read!\n", tempFileName );
-			
+
 			return false;
 		}
 	}
 
-	
+
 
 
 //
@@ -383,7 +383,7 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 
 
 	chunk_compressed_length = getGFXChunkLength( 0 );  // pictable data is located at 0
-	
+
 	compressed_segment = MM_MALLOC( chunk_compressed_length );
 	if( compressed_segment == NULL )
 	{
@@ -392,14 +392,14 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 
 	fread( compressed_segment, 1, chunk_compressed_length, file_handle_gfx );
 
-	
+
 	HuffExpand( compressed_segment, (PW8)pictable,  numImages * sizeof( pictable_t ), grhuffman );
 
-	MM_FREE( compressed_segment ); 
- 
+	MM_FREE( compressed_segment );
 
 
-    return true;            
+
+    return true;
 }
 
 /**
@@ -413,17 +413,17 @@ PUBLIC void GFXFile_Shutdown( void )
     {
         MM_FREE( grstarts );
     }
-  
+
     if( pictable )
     {
         MM_FREE( pictable );
     }
-  
+
     if( file_handle_gfx )
 	{
         fclose( file_handle_gfx );
 	}
-    
+
     for( i = 0; i < numImages; ++i )
     {
         if( graphic_segments[ i ] )
@@ -431,7 +431,7 @@ PUBLIC void GFXFile_Shutdown( void )
             MM_FREE( graphic_segments[ i ] );
         }
     }
-	
+
 }
 
 /**
@@ -443,7 +443,7 @@ PUBLIC void GFXFile_printPicTable( void )
 
 	for( i = 0 ; i < numImages ; ++i )
 	{
-		printf( "%d w:%d h:%d\n", i, LittleShort( pictable[ i ].width ), LittleShort( pictable[ i ].height ) ); 
+		printf( "%d w:%d h:%d\n", i, LittleShort( pictable[ i ].width ), LittleShort( pictable[ i ].height ) );
 	}
 
 }
@@ -469,7 +469,7 @@ PUBLIC void *GFXFile_getChunk( const W32 chunkId )
  * \param[out] width_out Width of image in pixels.
  * \param[out] height_out Height of image in pixels.
  * \param[in] palette Pointer to image palette (Must have 768 entries).
- * \return Pointer to RGB24 image data on success, otherwise NULL. 
+ * \return Pointer to RGB24 image data on success, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE()
  */
 PUBLIC void *GFXFile_decodeChunk_RGB24( W32 chunkId, W32 *width_out, W32 *height_out, W8 *palette )
@@ -507,22 +507,22 @@ PUBLIC void *GFXFile_decodeChunk_RGB24( W32 chunkId, W32 *width_out, W32 *height
 		return NULL;
 	}
 
-	
-	linewidth = width / 4;	
+
+	linewidth = width / 4;
 	size = width * height;
     for( i = 0 ; i < size ; ++i )
     {
         plane = i / (size / 4);
         sx = (i % (linewidth)) * 4 + plane;
-        sy = (i / linewidth) % height;        
-	    
-        ptr = buffer + (sx * 3 + sy * width * 3); 
-		      
-		temp = pic[ i ] * 3;  
-				
+        sy = (i / linewidth) % height;
+
+        ptr = buffer + (sx * 3 + sy * width * 3);
+
+		temp = pic[ i ] * 3;
+
 		ptr[ 0 ] = palette[ temp + 0 ];	/* R */
         ptr[ 1 ] = palette[ temp + 1 ];	/* G */
-        ptr[ 2 ] = palette[ temp + 2 ];	/* B */  
+        ptr[ 2 ] = palette[ temp + 2 ];	/* B */
     }
 
 	*width_out = width;
@@ -537,7 +537,7 @@ PUBLIC void *GFXFile_decodeChunk_RGB24( W32 chunkId, W32 *width_out, W32 *height
  * \param[out] width_out Width of image in pixels.
  * \param[out] height_out Height of image in pixels.
  * \param[in] palette Pointer to image palette (Must have 768 entries).
- * \return Pointer to RGB32 image data on success, otherwise NULL. 
+ * \return Pointer to RGB32 image data on success, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE()
  */
 PUBLIC void *GFXFile_decodeChunk_RGB32( W32 chunkId, W32 *width_out, W32 *height_out, W8 *palette )
@@ -575,24 +575,24 @@ PUBLIC void *GFXFile_decodeChunk_RGB32( W32 chunkId, W32 *width_out, W32 *height
 		return NULL;
 	}
 
-	
-	linewidth = width / 4;	
+
+	linewidth = width / 4;
 	size = width * height;
     for( i = 0 ; i < size ; ++i )
     {
         plane = i / (size / 4);
         sx = (i % (linewidth)) * 4 + plane;
-        sy = (i / linewidth) % height;        
-	    
-        ptr = buffer + (sx * 4 + sy * width * 4); 
-		      
-		temp = pic[ i ] * 3;  
-				
+        sy = (i / linewidth) % height;
+
+        ptr = buffer + (sx * 4 + sy * width * 4);
+
+		temp = pic[ i ] * 3;
+
 		ptr[ 0 ] = palette[ temp + 0 ];	/* R */
         ptr[ 1 ] = palette[ temp + 1 ];	/* G */
-        ptr[ 2 ] = palette[ temp + 2 ];	/* B */  
+        ptr[ 2 ] = palette[ temp + 2 ];	/* B */
 
-        ptr[ 3 ] = 0xFF;	/* A */  
+        ptr[ 3 ] = 0xFF;	/* A */
     }
 
 	*width_out = width;
@@ -604,7 +604,7 @@ PUBLIC void *GFXFile_decodeChunk_RGB32( W32 chunkId, W32 *width_out, W32 *height
 
 /**
  * \brief Set startpic value.
- * \param[in] startpic startpic value. 
+ * \param[in] startpic startpic value.
  * \return Nothing.
  */
 PUBLIC void GFXFile_setStartPicValue( W32 startpic )
@@ -614,7 +614,7 @@ PUBLIC void GFXFile_setStartPicValue( W32 startpic )
 
 /**
  * \brief Get startpic value.
- * \return startpic value.. 
+ * \return startpic value..
  */
 PUBLIC W32 GFXFile_getStartPicValue( void )
 {
@@ -645,9 +645,9 @@ PUBLIC void GFXFile_decodeFont( W32 fontId, W32 font_width, W32 font_height, con
 	W16 i;
 	W16 x, y;
 	W16 px, py;
-	W8 *buffer;	
+	W8 *buffer;
 	W8 *source;
-	W8 *ptr;	
+	W8 *ptr;
 	char tempFileName[ 1024 ];
 	SW32 chunkSize;
 
@@ -657,8 +657,8 @@ PUBLIC void GFXFile_decodeFont( W32 fontId, W32 font_width, W32 font_height, con
         return;
     }
 
-	sfont = (fontstruct *)GFXFile_getChunk( fontId );	
-	
+	sfont = (fontstruct *)GFXFile_getChunk( fontId );
+
 
 	buffer = (PW8) MM_MALLOC( font_width * font_height * 4 );
 	if( buffer == NULL )
@@ -678,18 +678,18 @@ PUBLIC void GFXFile_decodeFont( W32 fontId, W32 font_width, W32 font_height, con
 
 	px = py = 0;
 	for( i = 0; i < 256; ++i )
-	{		
+	{
 		if( ! sfont->width[ i ] )
 		{
 			continue;
 		}
-		 
+
 		if( px + sfont->width[ i ] > font_width - 1 )
 		{
 			py += sfont->height;
 			px = 0;
 		}
-			
+
 		source = ((PW8) sfont) + sfont->location[ i ];
 
 		ptr = buffer + (py * font_width + px) * 4;
@@ -697,22 +697,22 @@ PUBLIC void GFXFile_decodeFont( W32 fontId, W32 font_width, W32 font_height, con
 		{
 			for( x = 0; x < sfont->width[ i ]; ++x )
 			{
-				if( *source++ )	
+				if( *source++ )
 				{
 					ptr[ x * 4 + 3 ] = 0xFF;
 				}
 			}
 		}
-		
+
 		px += 16;
 
 	} // end for i = 0; i < 256; ++i
 
 
     wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%cfont%d.tga", path, PATH_SEP, fontId );
-	
-	TGA_write( tempFileName, 32, font_width, font_height, buffer, 0, 1 );	
-	
+
+	TGA_write( tempFileName, 32, font_width, font_height, buffer, 0, 1 );
+
 	MM_FREE( buffer );
 }
 
@@ -736,8 +736,8 @@ PUBLIC wtBoolean GFXFile_decodeScript( W32 textId_start, W32 textId_end, const c
 	{
 		return false;
 	}
-		
-	
+
+
 
 	for( i = textId_start ; i < textId_end ; ++i )
 	{
@@ -747,7 +747,7 @@ PUBLIC wtBoolean GFXFile_decodeScript( W32 textId_start, W32 textId_end, const c
             continue;
         }
 
-		text = (PW8) GFXFile_getChunk( i );	
+		text = (PW8) GFXFile_getChunk( i );
         if( text == NULL )
         {
             continue;
@@ -762,13 +762,13 @@ PUBLIC wtBoolean GFXFile_decodeScript( W32 textId_start, W32 textId_end, const c
 	    {
 		    continue;
 	    }
-        
-		fwrite( (const void *)text, 1, length, fHandle );     
+
+		fwrite( (const void *)text, 1, length, fHandle );
 
         fclose( fHandle );
 	}
 
-	
+
 
 	return true;
 }
@@ -787,7 +787,7 @@ PUBLIC wtBoolean GFXFile_decodeGFX( W32 start, W32 end, W8 *palette, const char 
 	void *data;
 	W32 width, height;
 	char tempFileName[ 1024 ];
-    SW32 chunkSize;
+	SW32 chunkSize;
 
 
 	printf( "Decoding GFX data..." );
@@ -795,29 +795,29 @@ PUBLIC wtBoolean GFXFile_decodeGFX( W32 start, W32 end, W8 *palette, const char 
 
 	GFXFile_setStartPicValue( start );
 
-	
+
 	for( i = start ; i <= end ; ++i )
 	{
 		chunkSize = GFXFile_cacheChunk( i );
-        if( chunkSize < 0 )
-        {
-            continue;
-        }
-		
-		data = GFXFile_decodeChunk_RGB24( i, &width, &height, palette );		
+		if( chunkSize < 0 )
+		{
+			continue;
+		}
+
+		data = GFXFile_decodeChunk_RGB24( i, &width, &height, palette );
 		if( data == NULL )
 		{
 			continue;
 		}
 
-        wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", path, PATH_SEP, i );
+		wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", path, PATH_SEP, i );
 
 		TGA_write( tempFileName, 24, width, height, data, 0, 1 );
 
 		MM_FREE( data );
 	}
 
-    printf( "Done\n" );
+	printf( "Done\n" );
 
 	return true;
 }

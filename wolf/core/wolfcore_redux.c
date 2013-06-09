@@ -123,7 +123,7 @@ PUBLIC void *wolfcore_ReduxGFX( const W32 chunkId, void *data, W32 *width, W32 *
         // PLAQUE_PAGE
 
         MergeImages( data, 4, 304, 91, 16, 24, 4,
-				     normalBuffer, 4, 91, 91, 16, 0, 0 );
+			normalBuffer, 4, 91, 91, 16, 0, 0 );
 
         if( _filterScale > 0 )
         {
@@ -164,7 +164,7 @@ PUBLIC void *wolfcore_ReduxGFX( const W32 chunkId, void *data, W32 *width, W32 *
         height = 16;
 
         MergeImages( (PW8)data, 4, 304, 91, 16, 192, 4,
-					 normalBuffer, 4, 91, 91, 16, 0, 0 );
+			normalBuffer, 4, 91, 91, 16, 0, 0 );
 
         wt_snprintf( fileName, sizeof( fileName ), "%s%c%s.tga", DIR_PICS, PATH_SEP, "PLAQUE_BLANK" );
 		TGA_write( fileName, 32, width, height, normalBuffer, 0, 1 );

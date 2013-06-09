@@ -21,8 +21,8 @@
 /**
  * \file file.h
  * \brief Access methods to file system services.
- * \author Michael Liebscher 
- * \date 2006-2007 
+ * \author Michael Liebscher
+ * \date 2006-2007
  */
 
 #ifndef __FILE_H__
@@ -77,10 +77,10 @@ extern wtBoolean FS_CompareFileAttributes( const char *path, W32 musthave, W32 c
 
 struct filestats
 {
-	W32 attributes;			/* The following attributes are defined as FA_ARCH to FA_SYSTEM*/
-	W32 creationtime;		/* Time when file data was created */		
-	W32 lastaccesstime;		/* Time when file data last accessed */
-	W32 lastwritetime;		/* Time when file data last modified */
+	W32 attributes;	/* The following attributes are defined as FA_ARCH to FA_SYSTEM*/
+	time_t creationtime;	/* Time when file data was created */
+	time_t lastaccesstime;	/* Time when file data last accessed */
+	time_t lastwritetime;	/* Time when file data last modified */
 };
 
 wtBoolean FS_GetFileAttributes( const char *filename, struct filestats *fs );

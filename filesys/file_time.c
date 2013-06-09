@@ -21,8 +21,8 @@
 /**
  * \file file_time.c
  * \brief Portable file time conversion.
- * \author Michael Liebscher 
- * \date 2006 
+ * \author Michael Liebscher
+ * \date 2006
  */
 
 #include <time.h>
@@ -58,15 +58,15 @@
 PUBLIC W32 UnixTimeToDosTime( time_t *t )
 {
   time_t t_even;
-  struct tm *s;         
+  struct tm *s;
 
   // Round up to even seconds.
-  t_even = (time_t)(((W32)(*t) + 1) & (~1));
-                                
+  t_even = ((*t) + 1) & (~1);
+
   s = localtime( &t_even );
-  if( s == (struct tm *)NULL ) 
+  if( s == (struct tm *)NULL )
   {
-      // time conversion error; use current time instead         
+      // time conversion error; use current time instead
       t_even = (time_t)(((W32)time(NULL) + 1) & (~1));
       s = localtime( &t_even );
   }

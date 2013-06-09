@@ -21,8 +21,8 @@
 /**
  * \file zip.h
  * \brief Zip file interface.
- * \author Michael Liebscher 
- * \date 2004-2005 
+ * \author Michael Liebscher
+ * \date 2004-2005
  */
 
 #ifndef __ZIP_H__
@@ -59,14 +59,14 @@
 #define VMB_CP_M				9
 #define VMB_WINDOWS_NTFS		10
 #define VMB_MVS_OS_390_Z_OS		11
-#define VMB_VSE					12 
-#define VMB_ACORN_RISC			13                
-#define VMB_VFAT				14 
-#define VMB_ALTERNATE_MVS		15             
-#define VMB_BEOS				16 
-#define VMB_TANDEM				17                    
-#define VMB_OS_400				18 
-#define VMB_OS_X_DARWIN			19 
+#define VMB_VSE					12
+#define VMB_ACORN_RISC			13
+#define VMB_VFAT				14
+#define VMB_ALTERNATE_MVS		15
+#define VMB_BEOS				16
+#define VMB_TANDEM				17
+#define VMB_OS_400				18
+#define VMB_OS_X_DARWIN			19
 
 
 
@@ -80,21 +80,21 @@ typedef struct zipHead_s
 	W32 timedate;
 	W32 crc32;
 	W32 compressed_size;
-	W32 uncompressed_size;
+	SW32 uncompressed_size;
 	W16 filename_length;
 	W16 extrafield_length;
 	W16 centralextra_length;
-	W16 comment_length;	
+	W16 comment_length;
 	W16 disknumstart;
 	W16 internalattribute;
-	W16 localflag;		
+	W16 localflag;
 	W32 externalattribute;
 	W32 offset;
 	wtBoolean deletefile;
 	char filename[ 256 ];
 	char extrafield[ 256 ];
 	char centralextra[ 256 ];
-	char comment[ 256 ];	
+	char comment[ 256 ];
 
 } zipHead_t;
 

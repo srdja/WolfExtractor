@@ -95,5 +95,7 @@ PRIVATE W32 index = 0;
  */
 PUBLIC void CProgressBar( void )
 {
-	;
+	printf( "%c\b", progressText[ index ] );
+	if( index < 3 ) ++index;
+	else index = 0;
 }

@@ -636,7 +636,7 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 	W32 totallength;
 
 
-    printf( "Decoding Page data..." );
+	printf( "Decoding Page Data..." );
 
 	if( ! PageFile_Setup( vsfname, &NumBlocks, &SpriteStart, &SoundStart ) )
 	{
@@ -823,5 +823,4 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 	printf( "Done\n" );
 
 	return true;
-
 }

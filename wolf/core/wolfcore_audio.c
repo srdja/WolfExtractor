@@ -21,7 +21,7 @@
 /**
  * \file wolfcore_audio.c
  * \brief Interface to Adlib sound/music decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2006-2009
  */
 
@@ -53,8 +53,8 @@ extern wtBoolean _saveMusicAsWav;
 
 /**
  * \brief Setup for audio decoding.
- * \param[in] aheadfname Audio header file name. 
- * \param[in] audfname Audio file name. 
+ * \param[in] aheadfname Audio header file name.
+ * \param[in] audfname Audio file name.
  * \return On success true, otherwise false.
  */
 PUBLIC wtBoolean AudioFile_Setup( const W8 *aheadfname, const W8 *audfname )
@@ -68,27 +68,27 @@ PUBLIC wtBoolean AudioFile_Setup( const W8 *aheadfname, const W8 *audfname )
 		! audfname || ! *audfname )
 	{
 		fprintf( stderr, "[AudioFile_Setup]: NULL file name!\n" );
-		
-		return false;	
+
+		return false;
 	}
 
 //
 // Load audiohed.XXX (offsets and lengths for audio file)
 //
 	wt_strlcpy( tempFileName, aheadfname, sizeof( tempFileName ) );
-		
-    handle = fopen( wt_strupr( tempFileName ), "rb" );
+
+	handle = fopen( wt_strupr( tempFileName ), "rb" );
 	if( handle == NULL )
 	{
 		handle = fopen( wt_strlwr( tempFileName ), "rb" );
-		
+
 		if( handle == NULL )
 		{
 			fprintf( stderr, "Could not open file (%s) for read!\n", tempFileName );
-			
+
 			return false;
 		}
-    }
+	}
 
 	length = FS_FileLength( handle );
 	if( length < 4 )
@@ -112,35 +112,30 @@ PUBLIC wtBoolean AudioFile_Setup( const W8 *aheadfname, const W8 *audfname )
 
 	count = fread( audiostarts, 1, length, handle );
 	if( count != length )
-    {
-        fclose( handle );
-
-        fprintf( stderr, "[AudioFile_Setup]: Read error on file: (%s)", tempFileName  );
-
+	{
+		fclose( handle );
+		fprintf( stderr, "[AudioFile_Setup]: Read error on file: (%s)", tempFileName  );
 		return false;
 	}
-
-
 	fclose( handle );
 
 //
 // Open the Audio data file
 //
 	wt_strlcpy( tempFileName, audfname, sizeof( tempFileName ) );
-	
+
 	audiohandle = fopen( wt_strupr( tempFileName ), "rb" );
 	if( audiohandle == NULL )
 	{
 		audiohandle = fopen( wt_strlwr( tempFileName ), "rb" );
 		if( audiohandle == NULL )
 		{
-			fprintf( stderr, "[AudioFile_Setup]: Could not open file (%s) for read!\n", tempFileName ); 
-			
+			fprintf( stderr, "[AudioFile_Setup]: Could not open file (%s) for read!\n", tempFileName );
+
 			return false;
 		}
-    }
-    
-    return true;
+	}
+	return true;
 }
 
 /**
@@ -148,29 +143,29 @@ PUBLIC wtBoolean AudioFile_Setup( const W8 *aheadfname, const W8 *audfname )
  * \return Nothing.
  */
 PUBLIC void AudioFile_Shutdown( void )
-{    
+{
     if( audiohandle )
     {
         fclose( audiohandle );
         audiohandle = NULL;
     }
-    
+
     if( audiostarts )
     {
         MM_FREE( audiostarts );
-    }    
+    }
 }
 
 /**
  * \brief Cache audio data.
- * \param[in] chunkId Id of chunk to cache. 
+ * \param[in] chunkId Id of chunk to cache.
  * \return On success pointer to raw data, otherwise NULL.
  */
 PUBLIC void *AudioFile_CacheAudioChunk( const W32 chunkId )
 {
 	W32	pos;
 	W32 chunk_size;
-	W32 count;			/* Number of bytes read from file */	
+	W32 count;			/* Number of bytes read from file */
 	SW8 *buffer;
 
 //
@@ -181,15 +176,15 @@ PUBLIC void *AudioFile_CacheAudioChunk( const W32 chunkId )
 	if( chunk_size < 1 )
 	{
 		fprintf( stderr, "[AudioFile_CacheAudioChunk]: Chunk size not valid\n" );
-		
+
 		return NULL;
 	}
-	
+
 
 	if( fseek( audiohandle, pos, SEEK_SET ) != 0 )
 	{
 		fprintf( stderr, "[AudioFile_CacheAudioChunk]: Could not seek in file!\n" );
-		
+
 		return NULL;
 	}
 
@@ -205,8 +200,8 @@ PUBLIC void *AudioFile_CacheAudioChunk( const W32 chunkId )
 		fprintf( stderr, "[AudioFile_CacheAudioChunk]: Read error!\n" );
 
 		MM_FREE( buffer );
-		
-		return NULL;	
+
+		return NULL;
 	}
 
 	return (void *)buffer;
@@ -220,7 +215,7 @@ PUBLIC void *AudioFile_CacheAudioChunk( const W32 chunkId )
 
 /**
  * \brief Endian byte swapping for wav file.
- * \param[in,out] data Data to byte swap. 
+ * \param[in,out] data Data to byte swap.
  * \param[in] length Length of data in bytes.
  * \return Nothing.
  * \note Call this function on Big Endian systems.
@@ -231,11 +226,11 @@ PUBLIC void AudioFile_dataByteSwap( void *data, SW32 length )
 	W8 temp;
 
 	ptr = (PW8) data;
-	
+
 	do
 	{
 		temp = ptr[ 0 ];
-		ptr[ 0 ] = ptr[ 1 ]; 
+		ptr[ 0 ] = ptr[ 1 ];
 		ptr[ 1 ] = temp;
 
 		length -= 2;
@@ -249,7 +244,7 @@ PUBLIC void AudioFile_dataByteSwap( void *data, SW32 length )
 
 /**
  * \brief Remap sound index number based on game version
- * \param[in] index Sound index. 
+ * \param[in] index Sound index.
  * \return Remapped sound index.
  */
 PRIVATE int GetSoundMappedIndex( int index )
@@ -266,7 +261,7 @@ PRIVATE int GetSoundMappedIndex( int index )
 
 /**
  * \brief Decode sound fx.
- * \param[in] start Start of sound fx chunks. 
+ * \param[in] start Start of sound fx chunks.
  * \param[in] end End of sound fx chunks.
  * \param[in] path Directory path to save file to.
  * \return On success true, otherwise false.
@@ -282,7 +277,7 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeSound( const W32 start, const W32 end, con
 	printf( "Decoding Sound FX..." );
 
 	if( ! ADLIB_Init( 22050 ) )
-	{			
+	{
 		return false;
 	}
 
@@ -304,9 +299,9 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeSound( const W32 start, const W32 end, con
 			continue;
 		}
 
-	
+
 #ifdef BIG_ENDIAN_SYSTEM
-		
+
 		AudioFile_dataByteSwap( buffWav, length );
 
 #endif
@@ -321,24 +316,19 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeSound( const W32 start, const W32 end, con
             wt_snprintf( filename, sizeof( filename ), "%s%c%.3d.ogg", path, PATH_SEP, GetSoundMappedIndex( i - start ) );
             vorbis_encode( filename, buffWav, length, 1, 16, 22050, 0, 0, 0 );
         }
-		
 		MM_FREE( buffWav );
 		MM_FREE( buffChunk );
 	}
-
-	
-
 	ADLIB_Shutdown();
 
-    printf( "Done\n" );
-
+	printf( "Done\n" );
 	return true;
 }
 
 
 /**
  * \brief Decode music chunks
- * \param[in] start Start of music chunks. 
+ * \param[in] start Start of music chunks.
  * \param[in] end End of music chunks.
  * \param[in] songNames Song titles.
  * \return On success true, otherwise false.
@@ -356,7 +346,7 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeMusic( const W32 start, const W32 end, con
 	printf( "Decoding Music (This could take a while)..." );
 
 	if( ! ADLIB_Init( 44100 ) )
-	{			
+	{
 		return false;
 	}
 
@@ -376,13 +366,13 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeMusic( const W32 start, const W32 end, con
 		{
 			MM_FREE( buffChunk );
 
-			continue;	
+			continue;
 		}
 
 
 		ADLIB_LoadMusic( buffChunk );
 
-		
+
 		buffWav = MM_MALLOC( uncompr_length * 64 * 2 );
 		if( buffWav == NULL )
 		{
@@ -394,15 +384,15 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeMusic( const W32 start, const W32 end, con
 		length = ADLIB_UpdateMusic( uncompr_length, buffWav );
 
 
-		
-	
+
+
 #ifdef BIG_ENDIAN_SYSTEM
-		
+
 		AudioFile_dataByteSwap( buffWav, length );
 
 #endif
-		
-		
+
+
         // Save audio buffer
         if( _saveMusicAsWav )
         {
@@ -432,17 +422,17 @@ PUBLIC wtBoolean AudioFile_ReduxDecodeMusic( const W32 start, const W32 end, con
 
 		    vorbis_encode( filename, buffWav, length, 1, 16, 44100, 0, 0, 0 );
         }
-		
 
-		
+
+
 		MM_FREE( buffWav );
 		MM_FREE( buffChunk );
 	}
 
 
 	ADLIB_Shutdown();
-	
-    printf( "Done\n" );
+
+	printf( "Done\n" );
 
 	return true;
 }

@@ -4,7 +4,7 @@
  *
  * Copyright (C) 1999,2000 Tatsuyuki Satoh , MultiArcadeMachineEmulator development
  * Modified for Wolfenstein 3D by Steven Fuller
- * 
+ *
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,7 +100,9 @@ void logerror(const char *text, ...);
 #define ENV_MOD_AR  0x02
 
 /* -------------------- tables --------------------- */
+#ifdef _MSC_VER
 #pragma warning(disable:4244) // explicit roundoff (may need fix!) vvvv
+#endif
 static const int slot_array[32]=
 {
 	 0, 2, 4, 1, 3, 5,-1,-1,
@@ -196,8 +198,9 @@ static const UINT32 MUL_TABLE[16]= {
 /* dummy attack / decay rate ( when rate == 0 ) */
 static INT32 RATE_0[16]=
 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
+#ifdef _MSC_VER
 #pragma warning(default:4244) // explicit roundoff (may need fix!) ^^^^
+#endif
 /* -------------------- static state --------------------- */
 
 /* lock level of common table */
@@ -397,7 +400,7 @@ INLINE void set_sl_rr(FM_OPL *OPL,int slot,int v)
 /* operator output calculator */
 #define OP_OUT(slot,env,con)   slot->wavetable[((slot->Cnt+con)/(0x1000000/SIN_ENT))&(SIN_ENT-1)][env]
 /* ---------- calculate channel ---------- */
-INLINE void OPL_CALC_CH( OPL_CH *CH )
+PRIVATE INLINE void OPL_CALC_CH( OPL_CH *CH )
 {
 	UINT32 env_out;
 	OPL_SLOT *SLOT;
@@ -442,7 +445,7 @@ INLINE void OPL_CALC_CH( OPL_CH *CH )
 
 /* ---------- calculate rythm block ---------- */
 #define WHITE_NOISE_db 6.0
-INLINE void OPL_CALC_RH( OPL_CH *CH )
+PRIVATE INLINE void OPL_CALC_RH( OPL_CH *CH )
 {
 	UINT32 env_tam,env_sd,env_top,env_hh;
 	int whitenoise = (int)((rand()&1)*(WHITE_NOISE_db/EG_STEP));
