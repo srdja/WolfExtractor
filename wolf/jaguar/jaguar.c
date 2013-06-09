@@ -21,7 +21,7 @@
 /**
  * \file jaguar.c
  * \brief Atari Jaguar Wolfenstein data file decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2013
  * \note Portion of this code was derived from DOOM, and was originally written by Id Software, Inc.
  */
@@ -55,8 +55,8 @@
 #define PATH_MUSIC      "jag_music"
 
 const char *jag_File_EXT[] =
-{    
-    "*.J64",	
+{
+    "*.J64",
     "*.JAG",
 
     NULL			/* Must be Last */
@@ -107,9 +107,9 @@ PRIVATE W8 greenLUT[16][16] = {
 	{  0,  19, 38, 57,77, 96, 115,134,154,173,192,211,231,250,255,255},   // E
 	{  0,  17, 34, 51,68, 85, 102,119,136,153,170,187,204,221,238,255}    // F
 };
-   
+
 PRIVATE W8 blueLUT[16][16] = {
-   //  0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F   
+   //  0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	{  255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255},  // 0
 	{  255,255,255,255,255,255,255,255,255,255,255,255,255,255,240,221},  // 1
 	{  255,255,255,255,255,255,255,255,255,255,255,255,252,230,208,187},  // 2
@@ -136,10 +136,10 @@ PRIVATE W8 blueLUT[16][16] = {
 typedef struct
 {
     // Should be "IWAD" or "PWAD".
-    char identification[4];	
+    char identification[4];
     int	numlumps;
     int	infotableofs;
-    
+
 } wadinfo_t;
 
 
@@ -180,7 +180,7 @@ int numWadFiles = 0;
  * \param[in] output Buffer to hold decompressed data
  * \param[in] length Length of decompressed data in bytes
  */
-#define LENSHIFT 4	
+#define LENSHIFT 4
 PRIVATE void decode( unsigned char *input, unsigned char *output, int length )
 {
 	W8 getidbyte = 0;
@@ -189,42 +189,42 @@ PRIVATE void decode( unsigned char *input, unsigned char *output, int length )
     int i;
     W8 *source;
 	W8 idbyte = 0;
-	    
+
 	while ( 1 )
-	{	
+	{
 		// get idbyte if necessary
 		if ( !getidbyte )
 		{
 			idbyte = *input++;
-		}	
+		}
         getidbyte = (getidbyte + 1) & 0x7;
-		
+
         if (idbyte & 0x1)   // decode
-        {		            			            
-            pos = *input++ << LENSHIFT;		
-            pos = pos | (*input >> LENSHIFT);			
-            
+        {
+            pos = *input++ << LENSHIFT;
+            pos = pos | (*input >> LENSHIFT);
+
             source = output - pos;
-			
-            len = (*input++ & 0xF) + 1;			
-            if ( len == 1 ) 
+
+            len = (*input++ & 0xF) + 1;
+            if ( len == 1 )
 			{
                 break;
             }
 
             for ( i = 0 ; i < len ; i++ )
-			{			
+			{
                 *output++ = *source++;
                 length--;
 			}
-        } 
-		else 
-		{			
+        }
+		else
+		{
             *output++ = *input++;
             length--;
         }
         idbyte = idbyte >> 1;
-    }	
+    }
 }
 
 /*
@@ -234,27 +234,26 @@ PRIVATE void decode( unsigned char *input, unsigned char *output, int length )
  */
 PRIVATE wtBoolean W_AddFile ( const char *filename )
 {
-    wadinfo_t	header;
-    lumpinfo_t*	lump_p;
-    int	i;
-    FILE *handle;
-    int	length;
-    int	startlump;
-	int numread;
-    filelump_t	*fileinfo;
-	filelump_t * filelumpPointer;
-    
-    // open the file and add to directory
-    if ( (handle = fopen( filename, "rb" )) == NULL)
-    {
+	wadinfo_t	header;
+	lumpinfo_t*	lump_p;
+	int		i;
+	FILE		*handle;
+	int		length;
+	int		startlump;
+	int		numread;
+	filelump_t	*fileinfo;
+	filelump_t *	filelumpPointer;
+
+	// open the file and add to directory
+	if ( (handle = fopen( filename, "rb" )) == NULL) {
 		fprintf( stderr, " couldn't open %s\n", filename );
 		return false;
-    }
-       
-    startlump = numlumps;
- 
+	}
+
+	startlump = numlumps;
+
 	// WAD file
-    fseek( handle, ROM_WAD_OFFSET, SEEK_SET );
+	fseek( handle, ROM_WAD_OFFSET, SEEK_SET );
 	numread = fread( &header, sizeof( header ), 1, handle );
 
 	if ( strncmp( header.identification,"IWAD", 4 ) != 0 )
@@ -263,7 +262,8 @@ PRIVATE wtBoolean W_AddFile ( const char *filename )
 		if ( strncmp( header.identification, "PWAD", 4 ) != 0 )
 		{
 			fprintf( stderr,  "Wad file %s doesn't have IWAD or PWAD id\n", filename );
-            return false;
+			fclose( handle );
+			return false;
 		}
 	}
 
@@ -271,28 +271,26 @@ PRIVATE wtBoolean W_AddFile ( const char *filename )
 	header.infotableofs = LittleLong( header.infotableofs );
 	length = header.numlumps * sizeof( filelump_t );
 	fileinfo = (filelump_t *) MM_MALLOC( length );
-	
-    fseek( handle, ROM_WAD_OFFSET + header.infotableofs, SEEK_SET );
-	numread = fread( fileinfo, length, 1, handle );
-	
-	numlumps += header.numlumps;
-    
 
-    
+	fseek( handle, ROM_WAD_OFFSET + header.infotableofs, SEEK_SET );
+	numread = fread( fileinfo, length, 1, handle );
+
+	numlumps += header.numlumps;
+
+
+
 	// Fill in lumpinfo
-	if ( lumpinfo == NULL ) 
-	{
+	if ( lumpinfo == NULL ) {
 		lumpinfo = (lumpinfo_t*)MM_MALLOC( numlumps * sizeof( lumpinfo_t ) );
-	} 
-	else 
-	{
+	} else {
 		lumpinfo = (lumpinfo_t*)MM_REALLOC( lumpinfo, numlumps * sizeof( lumpinfo_t ) );
 	}
 
-	if ( !lumpinfo )
-	{
+	if ( !lumpinfo ) {
 		fprintf( stderr, "Couldn't realloc lumpinfo" );
-        return false;
+		fclose( handle );
+		MM_FREE( fileinfo );
+		return false;
 	}
 
 	lump_p = &lumpinfo[ startlump ];
@@ -306,57 +304,48 @@ PRIVATE wtBoolean W_AddFile ( const char *filename )
 		lump_p->position = LittleLong( filelumpPointer->filepos );
 		lump_p->size = LittleLong( filelumpPointer->size );
 
-		strncpy ( lump_p->name, filelumpPointer->name, 8 );		
+		strncpy ( lump_p->name, filelumpPointer->name, 8 );
 	}
-	
-    return true;
+
+	return true;
 }
 
 /*
  * \brief Frees all lump data
  */
-PRIVATE void W_FreeLumps() 
+PRIVATE void W_FreeLumps()
 {
-	if ( lumpcache != NULL ) 
-	{
+	if( lumpcache ) {
 		int i;
-
-		for ( i = 0; i < numlumps; i++ ) 
+		for ( i = 0; i < numlumps; i++ )
 		{
-			if ( lumpcache[i] ) 
-			{
-				MM_FREE( lumpcache[i] );
-			}
+			MM_FREE( lumpcache[i] );
 		}
-
-		MM_FREE( lumpcache );
-		lumpcache = NULL;
 	}
+	MM_FREE( lumpcache );
+	lumpcache = NULL;
 
-	if ( lumpinfo != NULL ) 
-	{
-		MM_FREE( lumpinfo );
-		lumpinfo = NULL;
-		numlumps = 0;
-	}
+	MM_FREE( lumpinfo );
+	lumpinfo = NULL;
+	numlumps = 0;
 }
 
 /*
  * \brief Free this list of wad files so that a new list can be created
  */
-PRIVATE void W_FreeWadFiles() 
+PRIVATE void W_FreeWadFiles()
 {
 	int i;
-	
-	for ( i = 0 ; i < MAXWADFILES ; i++ ) 
-	{		
-		if ( wadFileHandles[i] != NULL ) 
+
+	for ( i = 0 ; i < MAXWADFILES ; i++ )
+	{
+		if ( wadFileHandles[i] != NULL )
 		{
 			fclose( wadFileHandles[i] );
 		}
 		wadFileHandles[i] = NULL;
 	}
-	numWadFiles = 0;	
+	numWadFiles = 0;
 }
 
 
@@ -400,8 +389,8 @@ PRIVATE wtBoolean W_InitWADFile (const char* filename)
             return false;
         }
 		memset (lumpcache,0, size);
-	} 
-	else 
+	}
+	else
 	{
 		// set up caching
 		size = numlumps * sizeof( *lumpcache );
@@ -423,7 +412,7 @@ PRIVATE wtBoolean W_InitWADFile (const char* filename)
  * \brief Shutdown WAD module.
  * \note Clears lumps and frees files
  */
-PRIVATE void W_Shutdown( void ) 
+PRIVATE void W_Shutdown( void )
 {
 	W_FreeLumps();
 	W_FreeWadFiles();
@@ -443,7 +432,7 @@ PRIVATE int W_CheckNumForName ( const char* name )
 		int	    x[2];
 
     } name8;
-    
+
     int	v1;
     int	v2;
 	int i;
@@ -456,9 +445,9 @@ PRIVATE int W_CheckNumForName ( const char* name )
     name8.s[NameLength - 1] = 0;
 
     // case insensitive
-	for ( i = 0; i < NameLength; ++i ) 
+	for ( i = 0; i < NameLength; ++i )
 	{
-		name8.s[i] = toupper( name8.s[i] );	
+		name8.s[i] = toupper( name8.s[i] );
 	}
 
     v1 = name8.x[0];
@@ -491,12 +480,12 @@ PRIVATE int W_GetNumForName ( const char *name )
     int	i;
 
     i = W_CheckNumForName ( name);
-    
+
     if (i == -1)
     {
         fprintf( stderr, "W_GetNumForName: %s not found!", name );
     }
-      
+
     return i;
 }
 
@@ -538,7 +527,7 @@ PRIVATE void W_ReadLump ( int lump, void *dest )
 
 	handle = l->handle;
 
-	
+
 	if( fseek( handle, ROM_WAD_OFFSET + l->position, SEEK_SET )  != 0 )
 	{
 		fprintf( stderr, "W_ReadLump: Unable to read from file" );
@@ -546,19 +535,19 @@ PRIVATE void W_ReadLump ( int lump, void *dest )
 	}
 
 	numread = fread( dest, 1, l->size, handle );
-	
+
     if ( l->name[ 0 ] & 0x80 ) // compressed
-    {        
-        unsigned char *buffer = (unsigned char *)MM_MALLOC( l->size );		 
+    {
+        unsigned char *buffer = (unsigned char *)MM_MALLOC( l->size );
 
         decode( (unsigned char *) dest, buffer, l->size );
 
         memcpy( dest, buffer, l->size );
-        MM_FREE( buffer );          
+        MM_FREE( buffer );
 
         l->name[ 0 ] &= 0x7F; // Remove compressed flag from name
     }
-	
+
 }
 
 /**
@@ -602,17 +591,17 @@ PRIVATE void setPalette( const char *paletteName )
 
 /**
  * \brief Convert 256 palette data to RGB888.
- * \param[in,out] dst Destination buffer to convert to. 
+ * \param[in,out] dst Destination buffer to convert to.
  * \param[in] src 256 palette data.
  * \param[in] length Length of source data.
  * \param[in] palette Pointer to 256*3 array.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void ConvertPaletteToRGB( W8 *dst, W8 *src, W32 length, W8 *palette )
 {
 	W32 i;
 
-	for( i = 0 ; i < length ; ++i ) 
+	for( i = 0 ; i < length ; ++i )
 	{
 		dst[ i * 3 ]		= palette[ src[ i ] * 3 ];
 		dst[ i * 3 + 1 ]	= palette[ src[ i ] * 3 + 1 ];
@@ -622,7 +611,7 @@ PRIVATE void ConvertPaletteToRGB( W8 *dst, W8 *src, W32 length, W8 *palette )
 
 /**
  * \brief Convert 256 palette data to RGB8888.
- * \param[in,out] dst Destination buffer to convert to. 
+ * \param[in,out] dst Destination buffer to convert to.
  * \param[in] src 256 palette data.
  * \param[in] length Length of source data in bytes.
  * \param[in] palette Pointer to 256*3 array.
@@ -632,7 +621,7 @@ PRIVATE void ConvertPaletteToRGB32( W8 *dst, W8 *src, W32 length, W8 *palette )
 	W32 srcIndex;
     W32 destIndex = 0;
 
-	for( srcIndex = 0 ; srcIndex < length ; srcIndex++, destIndex += 4 ) 
+	for( srcIndex = 0 ; srcIndex < length ; srcIndex++, destIndex += 4 )
 	{
 
         if( src[ srcIndex ] != 0 )
@@ -650,7 +639,7 @@ PRIVATE void ConvertPaletteToRGB32( W8 *dst, W8 *src, W32 length, W8 *palette )
  * \param[in] data Image data in 16 bit CrY format
  * \param[in] out[in,out] out Buffer to hold RGB888 data.
  * \param[in] length Length of data in bytes.
- * \note 
+ * \note
  */
 PRIVATE void ConvertCRY16ToRGB24( void *data, void *out, SW32 length )
 {
@@ -662,10 +651,10 @@ PRIVATE void ConvertCRY16ToRGB24( void *data, void *out, SW32 length )
 
 	src16 = (PW16) data;
 	dest8 = (PW8)out;
-	
+
 	for( i = 0 ; i < length ; i++ )
 	{
-		color = BigShort( src16[ i ] );	
+		color = BigShort( src16[ i ] );
 
         cyan = (color & 0xF000) >> 12,
 		red = (color & 0x0F00) >> 8,
@@ -673,19 +662,19 @@ PRIVATE void ConvertCRY16ToRGB24( void *data, void *out, SW32 length )
 
 		*(dest8++) = (((W32)redLUT[cyan][red]) * intensity) >> 8;    // R
 		*(dest8++) = (((W32)greenLUT[cyan][red]) * intensity) >> 8;  // G
-		*(dest8++) = (((W32)blueLUT[cyan][red]) * intensity) >> 8;   // B		
-	} 
+		*(dest8++) = (((W32)blueLUT[cyan][red]) * intensity) >> 8;   // B
+	}
 
 }
 
 
 /**
  * \brief Extract range of sprite lumps from WAD file and convert to RGB8888 TGA.
- * \param[in] lumpStart Start of lumpIds 
+ * \param[in] lumpStart Start of lumpIds
  * \param[in] lumpEnd LumpId in WAD file of screen to decode.
  * \param[in] offset Offset to start of image data
  * \param[in] outputPath Path to save TGA image to.
- * \note 
+ * \note
  */
 PRIVATE void decodeSprite( int lumpStart, int lumpEnd, int offset, const char *outputPath )
 {
@@ -699,15 +688,15 @@ PRIVATE void decodeSprite( int lumpStart, int lumpEnd, int offset, const char *o
 
 	for( lumpId = lumpStart ; lumpId <= lumpEnd ; lumpId++ )
 	{
-		ptrResource8 = (PW8)W_CacheLumpNum( lumpId );	
+		ptrResource8 = (PW8)W_CacheLumpNum( lumpId );
 
-		x_offset = ptrResource8[ 0 ]; 
+		x_offset = ptrResource8[ 0 ];
 		y_offset = ptrResource8[ 1 ];
 
 		width = ptrResource8[ 2 ];
 		height = ptrResource8[ 3 ];
 
-		
+
 		buffer = (W8 *)MM_MALLOC( 128 * 128 * 4 );
         memset( buffer, 0, 128 * 128 * 4 );
 
@@ -716,14 +705,14 @@ PRIVATE void decodeSprite( int lumpStart, int lumpEnd, int offset, const char *o
 	    for( y = 0 ; y < height ; y++ )
 	    {
 		    for( x = 0 ; x < width ; x++, src++ )
-		    {	
+		    {
                 if( *src != 0 )
                 {
 		            dptr[ 0 ] = palette[ *src * 3 + 0 ];
 		            dptr[ 1 ] = palette[ *src * 3 + 1 ];
 		            dptr[ 2 ] = palette[ *src * 3 + 2 ];
                     dptr[ 3 ] = 255;
-                }			    
+                }
 			    dptr += 4;
 		    }
 
@@ -732,16 +721,16 @@ PRIVATE void decodeSprite( int lumpStart, int lumpEnd, int offset, const char *o
 
         wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", outputPath, PATH_SEP, lumpinfo[ lumpId ].name );
 		TGA_write( filename, 32, 128, 128, buffer, 0, 1 );
-		
+
 		MM_FREE( buffer );
 	}
-	
+
 }
 
 /**
  * \brief Extract screen lump from WAD file and convert to TGA.
  * \param[in] lumpId Lump Id of screen to decode.
- * \note 
+ * \note
  */
 PRIVATE void decodeScreenLump( int lumpId )
 {
@@ -750,8 +739,8 @@ PRIVATE void decodeScreenLump( int lumpId )
 	int width, height;
     char filename[ 256 ];
 
-    ptrResource16 = (PW16)W_CacheLumpNum( lumpId );	
-    
+    ptrResource16 = (PW16)W_CacheLumpNum( lumpId );
+
 	width = BigShort( ptrResource16[ 0 ] );
 	height = BigShort( ptrResource16[ 1 ] );
 
@@ -759,7 +748,7 @@ PRIVATE void decodeScreenLump( int lumpId )
     memset( imageBuffer, 0, width * height * 4 );
 
 	ConvertPaletteToRGB32( imageBuffer, (PW8)(ptrResource16+8), width * height, palette );
-	
+
     wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", PATH_SCREENS, PATH_SEP, lumpinfo[ lumpId ].name );
 
     TGA_write( filename, 32, width, height, imageBuffer, 0, 1 );
@@ -772,9 +761,9 @@ PRIVATE void decodeScreenLump( int lumpId )
  */
 PRIVATE void decodeBriefScreen( )
 {
-	W16 *ptrResource16; 
+	W16 *ptrResource16;
 	W8 *imageBuffer;
-	W8 *briefScreenBuffer;	
+	W8 *briefScreenBuffer;
     W8 *src8;
     W16 *src16;
 	int width, height;
@@ -783,20 +772,20 @@ PRIVATE void decodeBriefScreen( )
 
 	setPalette( "BRIEFPAL" );
 
-	ptrResource16 = (PW16)W_CacheLumpNum( 359 );	
+	ptrResource16 = (PW16)W_CacheLumpNum( 359 );
 
 	width = BigShort( ptrResource16[ 0 ] );
 	height = BigShort( ptrResource16[ 1 ] );
 
 	imageBuffer = (PW8) MM_MALLOC( width * height * 2 );
     briefScreenBuffer = (PW8) MM_MALLOC( width * height * 3 );
-    
+
     src8 = (PW8)(ptrResource16+8);
     src16 = (PW16) imageBuffer;
 
 	for( i = 0 ; i < width * height ; i++ )
 	{
-		*(src16++) = BigShort( palette[ src8[ i ] * 2 ] << 8 | palette[ src8[ i ] * 2 + 1 ] );        
+		*(src16++) = BigShort( palette[ src8[ i ] * 2 ] << 8 | palette[ src8[ i ] * 2 + 1 ] );
 	}
 
     wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", PATH_SCREENS, PATH_SEP, lumpinfo[ 359 ].name );
@@ -819,7 +808,7 @@ PRIVATE void decodeWolfTitle()
 
 
 	ptrResource16 = (PW16)W_CacheLumpNum( 362 );
-	
+
 	width = BigShort( ptrResource16[ 0 ] );
 	height = BigShort( ptrResource16[ 1 ] );
 
@@ -828,7 +817,7 @@ PRIVATE void decodeWolfTitle()
 	ConvertCRY16ToRGB24( ptrResource16+12, imageBuffer32, width * height );
     wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", PATH_SCREENS, PATH_SEP, lumpinfo[ 362 ].name );
     TGA_write( filename, 24, width, height, imageBuffer32, 0, 1 );
-    
+
 	MM_FREE( imageBuffer32 );
 }
 
@@ -841,24 +830,24 @@ PRIVATE void decodeScreens( )
 
 	// Decode mission brief screen
 	decodeBriefScreen();
-	
+
 	setPalette( "RGBPALS" );
-    
+
     // Decode LOGO
     decodeScreenLump( 356 );
-	
+
 	// Decode Meet the Cast label
     decodeScreenLump( 357 );
-	
+
 	// Decode Credits Screen
     decodeScreenLump( 358 );
-    
+
 	// Decode Wolf Title
 	decodeWolfTitle();
-	
+
 	// Decode BallMap
 	ptrResource32 = (PW32)W_CacheLumpNum( 361 );
-	
+
 
 }
 
@@ -866,12 +855,12 @@ PRIVATE void decodeScreens( )
  * \brief Extract map icon data from WAD file and convert to TGA.
  */
 PRIVATE void decodeHUD_MapIcon()
-{	
+{
     FILE *fhandle;
     int width, height, x, y;
 	char filename[ 256 ];
     W16 *ptr16;
-    W8 *buffer;	
+    W8 *buffer;
     W8 *ptrResource = (W8 *)W_CacheLumpNum( 298 );
     ptr16 = (PW16)ptrResource;
 
@@ -884,7 +873,7 @@ PRIVATE void decodeHUD_MapIcon()
 	//wt_snprintf( filename, sizeof( filename ), "%s/%.8s.dump", PATH_HUD, lumpinfo[ 298 ].name );
     //TGA_write( "MAPICONS.tga", 24, width, height, buffer, 0, 1 );
 
-    //MM_FREE( buffer );	
+    //MM_FREE( buffer );
 
 	//fhandle = fopen( filename, "wb" );
 	//fwrite( ptrResource, 1, lumpinfo[ 298 ].size, fhandle );
@@ -895,15 +884,15 @@ PRIVATE void decodeHUD_MapIcon()
  * \brief Extract HUD data from WAD file and convert to TGA.
  */
 PRIVATE void decodeHUD()
-{    
-     
+{
+
     // decode weapons
-    decodeSprite( 274, 297, 8, PATH_HUD );	 
+    decodeSprite( 274, 297, 8, PATH_HUD );
 
     decodeHUD_MapIcon();
 
     // decode numbers, ammo, faces
-    decodeSprite( 299, 353, 8, PATH_HUD );	 
+    decodeSprite( 299, 353, 8, PATH_HUD );
 
 
 }
@@ -926,15 +915,15 @@ PRIVATE void decodeLabels( )
 		ptr16 = (PW16)ptrResource;
 		width = BigShort( ptr16[ 0 ] );
 		height = BigShort( ptr16[ 1 ] );
-		
+
 		buffer = (W8 *)MM_MALLOC( width * height * 4 );
 		memset( buffer, 0,  width * height * 4 );
 		ConvertPaletteToRGB32( buffer, (PW8)(ptr16+8), width * height, palette );
-        
-        wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", PATH_LABELS, PATH_SEP, lumpinfo[ lumpId ].name );        
+
+        wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.tga", PATH_LABELS, PATH_SEP, lumpinfo[ lumpId ].name );
 		TGA_write( filename, 32, width, height, buffer, 0, 1 );
 
-		MM_FREE( buffer );		
+		MM_FREE( buffer );
 	}
 }
 
@@ -947,14 +936,14 @@ PRIVATE void decodeWalls()
 	W8 *buffer;
 	W8 *newwall;
 	char filename[ 256 ];
-	
-	
+
+
 	for( lumpIndex = 186 ; lumpIndex <= 221 ; lumpIndex++ )
 	{
-		W8 *ptrResource = (W8 *)W_CacheLumpNum( lumpIndex );	
+		W8 *ptrResource = (W8 *)W_CacheLumpNum( lumpIndex );
 
 		newwall = obverseWall( ptrResource, 128, 128 );
-		
+
 		buffer = (W8 *)MM_MALLOC( 128 * 128 * 3 );
 		ConvertPaletteToRGB( buffer, newwall, 128 * 128, palette );
 
@@ -971,7 +960,7 @@ PRIVATE void decodeWalls()
  */
 PRIVATE void decodeSprites()
 {
-    decodeSprite( 31, 184, 8, PATH_SPRITES );   
+    decodeSprite( 31, 184, 8, PATH_SPRITES );
 }
 
 /**
@@ -988,7 +977,7 @@ PRIVATE void decodeSounds()
         ptrResource = (W8 *)W_CacheLumpNum( lumpIndex );
 
         wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.wav", PATH_SOUNDS, PATH_SEP, lumpinfo[ lumpIndex ].name );
-        wav_write( filename, ptrResource, lumpinfo[ lumpIndex ].size, 1, 22050, 1 ); 
+        wav_write( filename, ptrResource, lumpinfo[ lumpIndex ].size, 1, 22050, 1 );
     }
 }
 
@@ -1012,7 +1001,7 @@ PRIVATE void decodeMusic()
         ptrResource = (W8 *)W_CacheLumpNum( lumpIndex );
 
         wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.mid", PATH_MUSIC, PATH_SEP, lumpinfo[ lumpIndex ].name );
-        
+
         handle = fopen( filename, "wb" );
         fwrite( ptrResource, 1, lumpinfo[ lumpIndex ].size, handle );
         fclose( handle );
@@ -1020,7 +1009,7 @@ PRIVATE void decodeMusic()
 }
 
 /**
- * \brief Extract maps from WAD file and dump to file system.  
+ * \brief Extract maps from WAD file and dump to file system.
  */
 PRIVATE void decodeMaps()
 {
@@ -1034,7 +1023,7 @@ PRIVATE void decodeMaps()
         ptrResource = (W8 *)W_CacheLumpNum( lumpIndex );
 
         wt_snprintf( filename, sizeof( filename ), "%s%c%.8s.map", PATH_MAPS, PATH_SEP, lumpinfo[ lumpIndex ].name );
-        
+
         handle = fopen( filename, "wb" );
         fwrite( ptrResource, 1, lumpinfo[ lumpIndex ].size, handle );
         fclose( handle );
@@ -1043,26 +1032,26 @@ PRIVATE void decodeMaps()
 
 
 /**
- * \brief Interface to Atari Jaguar data extractor.  
+ * \brief Interface to Atari Jaguar data extractor.
  */
 PUBLIC void wolf_jaguar_decoder( void )
 {
 	char *fname;
 	char ext[ 256 ];
 	int i;
-		
+
     i = 0;
     while( jag_File_EXT[ i ] )
     {
-	    wt_strlcpy( ext, jag_File_EXT[ i ], sizeof( ext ) );        	
-	    fname = FS_FindFirst( ext );	
+	    wt_strlcpy( ext, jag_File_EXT[ i ], sizeof( ext ) );
+	    fname = FS_FindFirst( ext );
 	    FS_FindClose();
 
 	    if( fname == NULL )
 	    {
 		    // try again with lower case
 		    fname = FS_FindFirst( wt_strlwr( ext ) );
-		    FS_FindClose();		    
+		    FS_FindClose();
 	    }
 
         if( fname != NULL )
@@ -1103,7 +1092,7 @@ PUBLIC void wolf_jaguar_decoder( void )
     printf( "Decoding map data... " );
     decodeMaps();
     printf( "Done\n" );
-    
+
     printf( "Decoding sprite data... " );
     decodeSprites();
     printf( "Done\n" );
@@ -1132,5 +1121,5 @@ PUBLIC void wolf_jaguar_decoder( void )
     decodeMusic();
     printf( "Done\n" );
 
-    W_Shutdown();		
+    W_Shutdown();
 }

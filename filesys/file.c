@@ -21,7 +21,7 @@
 /**
  * \file file.c
  * \brief File I/O layer
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2005-2013
  */
 
@@ -78,7 +78,7 @@ PUBLIC SW32 FS_FileRead( void *ptr, size_t size, size_t nmemb, FILE *stream )
 /**
  * \brief Open a file stream.
  * \param[in] filename Name of file to open.
- * \param[out] file  FILE pointer. 
+ * \param[out] file  FILE pointer.
  * \return On success length of the file in bytes, otherwise -1.
  */
 PUBLIC SW32 FS_FileOpen( const char *filename, FILE **file )
@@ -131,7 +131,7 @@ PUBLIC SW32 FS_FileLoad( const char *path, void **buffer )
 	buf = (PW8)MM_MALLOC( length + 1 );
 	*buffer = buf;
 
-	
+
 	if( FS_FileRead( buf, 1, length, fhandle ) < 0 )
 	{
 		MM_FREE( buf );
@@ -148,4 +148,3 @@ PUBLIC SW32 FS_FileLoad( const char *path, void **buffer )
 
 	return length;
 }
-

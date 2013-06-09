@@ -27,8 +27,8 @@
  * \brief Simple Ogg Vorbis interface.
  * \author Michael Liebscher
  * \date 2007-2009
- * \note Portions from oggenc, Copyright 2000-2002, Michael Smith 
- * Vorbize, (c) Kenneth Arnold and libvorbis examples, (c) Monty 
+ * \note Portions from oggenc, Copyright 2000-2002, Michael Smith
+ * Vorbize, (c) Kenneth Arnold and libvorbis examples, (c) Monty
  */
 
 
@@ -89,7 +89,7 @@ HOTSPOT PRIVATE SW32 read_samples( float **buffer, SW32 samples )
 							(buf[ i * 2 * channels + 2 * j ] & 0xFF)) / 32768.0f;
 		}
 	}
-		
+
 
 	return realsamples;
 }
@@ -172,7 +172,7 @@ HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W
 
 	ogg_stream_init( &os, serialno );
 
-	/* Now, build the three header packets and send through to the stream 
+	/* Now, build the three header packets and send through to the stream
 	   output stage (but defer actual file output until the main encode loop) */
 
 
@@ -187,11 +187,6 @@ HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W
 
 	while( (result = ogg_stream_flush( &os, &og )) )
 	{
-		if( ! result )
-		{
-			break;
-		}
-
 		ret = fwrite( og.header, 1, og.header_len, fp );
 		ret += fwrite( og.body, 1, og.body_len, fp );
 
@@ -230,7 +225,7 @@ HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W
 				// progress bar here
 			}
 
-			/* Tell the library how many samples (per channel) we wrote 
+			/* Tell the library how many samples (per channel) we wrote
 			   into the supplied buffer */
 			vorbis_analysis_wrote( &vd, samples_read );
 		}
@@ -244,7 +239,7 @@ HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W
 			vorbis_analysis( &vb, NULL );
 			vorbis_bitrate_addblock( &vb );
 
-			while( vorbis_bitrate_flushpacket( &vd, &op ) ) 
+			while( vorbis_bitrate_flushpacket( &vd, &op ) )
 			{
 				/* Add packet to bitstream */
 				ogg_stream_packetin( &os, &op );
@@ -273,9 +268,9 @@ HOTSPOT PUBLIC SW32 vorbis_encode( const char *filename, void *data, W32 size, W
 					}
 					else
 					{
-						bytes_written += ret; 
+						bytes_written += ret;
 					}
-	
+
 					if( ogg_page_eos( &og ) )
 					{
 						eos = 1;

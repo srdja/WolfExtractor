@@ -20,8 +20,8 @@
 
 /**
  * \file mac.c
- * \brief This module is used to extract data from the Macintosh version of Wolfenstein 3-D. 
- * \author Michael Liebscher 
+ * \brief This module is used to extract data from the Macintosh version of Wolfenstein 3-D.
+ * \author Michael Liebscher
  * \date 2004-2013
  * \note Portion of this code was derived from code that was originally written by Id Software, Inc., Bill Heineman and Chris DeSalvo.
  */
@@ -78,28 +78,28 @@ PRIVATE FILE *fResHandle;
 PRIVATE W8 *getResourceBlock( W32 offset, W32 length, W32 *glen )
 {
 	W8 *buf;
-	
+
 	fseek( fResHandle, offset, SEEK_SET );
 
 	buf = (PW8)MM_MALLOC( length );
 	if( buf == NULL )
 	{
 		printf( "Could not allocate memory block\n" );
-		
+
 		return NULL;
 	}
 
 	if( fread( buf, 1, length, fResHandle ) != length )
 	{
 		printf( "read error on resource file\n" );
-
+		MM_FREE( buf );
 		return NULL;
 	}
 
 	if( fread( glen, 1, 4, fResHandle ) != 4 )
 	{
 		printf( "read error on resource file\n" );
-
+		MM_FREE( buf );
 		return NULL;
 	}
 
@@ -113,7 +113,7 @@ PRIVATE W8 *getResourceBlock( W32 offset, W32 length, W32 *glen )
  * \param[in,out] dst Buffer to hold uncompressed data.
  * \param[in] src Compressed data block.
  * \param[in] Length Length of source data block in bytes.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void Decode_LZSS( W8 *dst, const W8 *src, W32 length )
 {
@@ -121,8 +121,8 @@ PRIVATE void Decode_LZSS( W8 *dst, const W8 *src, W32 length )
 	W32 runCount;
 	W32 Fun;
 	W8 *ptrBack;
-	
-	if( ! length ) 
+
+	if( ! length )
 	{
 		return;
 	}
@@ -130,32 +130,32 @@ PRIVATE void Decode_LZSS( W8 *dst, const W8 *src, W32 length )
 	bitBucket = (W32) src[ 0 ] | 0x100;
 	++src;
 
-	do 
+	do
 	{
-		if( bitBucket & 1 ) 
+		if( bitBucket & 1 )
 		{
 			dst[ 0 ] = src[ 0 ];
 			++src;
 			++dst;
 			--length;
-		} 
+		}
 		else
 		{
 			runCount = (W32) src[ 0 ] | ((W32) src[ 1 ] << 8);
 			Fun = 0x1000 - (runCount & 0xFFF);
 			ptrBack = dst - Fun;
 			runCount = ((runCount >> 12) & 0x0F) + 3;
-			if( length >= runCount ) 
+			if( length >= runCount )
 			{
 				length -= runCount;
-			} 
-			else 
+			}
+			else
 			{
 				runCount = length;
 				length = 0;
 			}
 
-			while( runCount-- ) 
+			while( runCount-- )
 			{
 				*dst++ = *ptrBack++;
 			}
@@ -163,7 +163,7 @@ PRIVATE void Decode_LZSS( W8 *dst, const W8 *src, W32 length )
 		}
 
 		bitBucket >>= 1;
-		if( bitBucket == 1 ) 
+		if( bitBucket == 1 )
 		{
 			bitBucket = (W32) src[ 0 ] | 0x100;
 			++src;
@@ -181,17 +181,17 @@ PRIVATE void Decode_LZSS( W8 *dst, const W8 *src, W32 length )
 
 /**
  * \brief Convert 256 palette data to RGB.
- * \param[in,out] dst Destination buffer to convert to. 
+ * \param[in,out] dst Destination buffer to convert to.
  * \param[in] src 256 palette data.
  * \param[in] length Length of source data.
  * \param[in] palette Pointer to 256*3 array.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void ConvertPaletteToRGB( W8 *dst, W8 *src, W32 length, W8 *palette )
 {
 	W32 i;
 
-	for( i = 0 ; i < length ; ++i ) 
+	for( i = 0 ; i < length ; ++i )
 	{
 		dst[ i * 3 ]		= palette[ src[ i ] * 3 ];
 		dst[ i * 3 + 1 ]	= palette[ src[ i ] * 3 + 1 ];
@@ -202,7 +202,7 @@ PRIVATE void ConvertPaletteToRGB( W8 *dst, W8 *src, W32 length, W8 *palette )
 /**
  * \brief Set global palette.
  * \param[in] offset Offset of palette in resource file.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void setPalette( W32 offset )
 {
@@ -228,7 +228,7 @@ PRIVATE void setPalette( W32 offset )
  * \brief Decodes BJ map image and writes data to tga file.
  * \param[in] offset Offset in bytes the resource block.
  * \param[in] length Length of encoded data in bytes.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void DecodeBJMapImage( W32 offset, W32 length )
 {
@@ -249,7 +249,7 @@ PRIVATE void DecodeBJMapImage( W32 offset, W32 length )
 		printf( "Could not allocate memory block\n" );
 
 		MM_FREE( ptrResource );
-		
+
 		return;
 	}
 
@@ -269,7 +269,7 @@ PRIVATE void DecodeBJMapImage( W32 offset, W32 length )
  * \brief Decodes BJ intermission images and writes data to tga file.
  * \param[in] offset Offset in bytes the resource block.
  * \param[in] length Length of encoded data in bytes.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void DecodeBJIntermImages( W32 offset, W32 length )
 {
@@ -281,13 +281,13 @@ PRIVATE void DecodeBJIntermImages( W32 offset, W32 length )
 	W32 width, height, i;
 	W32 junk;
 	char filename[ 32 ];
-	
+
 	ptrResource = (PW32)getResourceBlock( offset, length, &junk );
 	if( ! ptrResource )
 	{
 		return;
 	}
-	
+
 	uncomprLength = BigLong( ptrResource[ 0 ] );
 
 	uncompr = (PW8)MM_MALLOC( uncomprLength );
@@ -296,28 +296,28 @@ PRIVATE void DecodeBJIntermImages( W32 offset, W32 length )
 		printf( "Could not allocate memory block\n" );
 
 		MM_FREE( ptrResource );
-		
+
 		return;
 	}
 
 	Decode_LZSS( uncompr, (PW8)&ptrResource[ 1 ], uncomprLength );
-	
+
 	MM_FREE( ptrResource );
-	
+
 	MM_MEMCPY( indexs, uncompr, 12 );
-	
+
 	indexs[ 0 ] = BigLong( indexs[ 0 ] );
 	indexs[ 1 ] = BigLong( indexs[ 1 ] );
 	indexs[ 2 ] = BigLong( indexs[ 2 ] );
-	
-		
+
+
 	buffer = (PW8) MM_MALLOC( 256 * 256 * 3 );
 	if( buffer == NULL )
 	{
 		printf( "Could not allocate memory block\n" );
 
 		MM_FREE( uncompr );
-		
+
 		return;
 	}
 
@@ -326,16 +326,16 @@ PRIVATE void DecodeBJIntermImages( W32 offset, W32 length )
 		ptr = (PW16)&uncompr[ indexs[ i ]  ];
 		width = BigShort( ptr[ 0 ] );
 		height = BigShort( ptr[ 1 ] );
-		
+
 		ConvertPaletteToRGB( buffer, (PW8)&ptr[ 2 ], width * height, macPalette );
-		
+
         wt_snprintf( filename, sizeof( filename ), "%s%cbj%d.tga", DIRPATHPICS, PATH_SEP, i );
 
 		TGA_write( filename, 24, width, height, buffer, 0, 1 );
 	}
-	
+
 	MM_FREE( buffer );
-	
+
 	MM_FREE( uncompr );
 }
 
@@ -344,7 +344,7 @@ PRIVATE void DecodeBJIntermImages( W32 offset, W32 length )
  * \param[in] offset Offset in bytes the resource block.
  * \param[in] length Length of encoded data in bytes.
  * \param[in] filename Name of file to save as.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void DecodeScreen( W32 offset, W32 length, const char *filename )
 {
@@ -387,7 +387,7 @@ PRIVATE void DecodeScreen( W32 offset, W32 length, const char *filename )
 
 		return;
 	}
-	
+
 	ConvertPaletteToRGB( buffer, (PW8)&uncompr[ 2 ], width * height, macPalette );
 
 	TGA_write( filename, 24, width, height, buffer, 0, 1 );
@@ -399,7 +399,7 @@ PRIVATE void DecodeScreen( W32 offset, W32 length, const char *filename )
 
 
 /**
- * \brief Decodes art data from Macintosh resource fork. 
+ * \brief Decodes art data from Macintosh resource fork.
  */
 PRIVATE void decodeScreens( void )
 {
@@ -412,7 +412,7 @@ PRIVATE void decodeScreens( void )
 	setPalette( IDPAL );
 	wt_snprintf( path, sizeof( path ), "%s%cidpic.tga", DIRPATHPICS, PATH_SEP );
 	DecodeScreen( 899914, 46893, path );
-	
+
 	setPalette( INTERPAL );
 	wt_snprintf( path, sizeof( path ), "%s%cintermissionpic.tga", DIRPATHPICS, PATH_SEP );
 	DecodeScreen( 947583, 49624, path );
@@ -420,7 +420,7 @@ PRIVATE void decodeScreens( void )
 
 	DecodeBJIntermImages( 1018931, 20766 );
 
-	
+
 	setPalette( GAMEPAL );
 	wt_snprintf( path, sizeof( path ), "%s%cgetpsychedpic.tga", DIRPATHPICS, PATH_SEP );
 	DecodeScreen( 997983, 3256, path );
@@ -436,7 +436,7 @@ PRIVATE void decodeScreens( void )
 
 	setPalette( TITLEPAL );
 	wt_snprintf( path, sizeof( path ), "%s%ctitlepic.tga", DIRPATHPICS, PATH_SEP );
-	DecodeScreen( 2067971, 167032, path ); 
+	DecodeScreen( 2067971, 167032, path );
 
 
 }
@@ -461,7 +461,7 @@ PUBLIC W8 *obverseWall( const W8 *src, W16 width, W16 height )
 {
 	W8 *target;
 	W16 w, h;
-	
+
 	target = (W8 *)MM_MALLOC( width * height );
 	if( target == NULL )
 	{
@@ -469,9 +469,9 @@ PUBLIC W8 *obverseWall( const W8 *src, W16 width, W16 height )
 
 		return NULL;
 	}
-	
+
 	for( h = 0; h < height; ++h )
-	for( w = 0; w < width; ++w ) 
+	for( w = 0; w < width; ++w )
 	{
 		target[ h + width * w ] = src[ h * width + w ];
 	}
@@ -488,7 +488,7 @@ PUBLIC W8 *obverseWall( const W8 *src, W16 width, W16 height )
  * \return Nothing.
  */
 PRIVATE void DecodeWall( W32 offset, W32 length, W32 *retval, const char *filename )
-{	
+{
 	W8 *ptrResource;
 	W8 *uncompr;
 	W8 *buffer;
@@ -509,11 +509,11 @@ PRIVATE void DecodeWall( W32 offset, W32 length, W32 *retval, const char *filena
 
 		return;
 	}
-	
+
 	Decode_LZSS( uncompr, ptrResource, 128 * 128 );
 
 	newwall = obverseWall( uncompr, 128, 128 );
-		
+
 	buffer = (W8 *)MM_MALLOC( 128 * 128 * 3 );
 	if( buffer == NULL )
 	{
@@ -521,7 +521,7 @@ PRIVATE void DecodeWall( W32 offset, W32 length, W32 *retval, const char *filena
 
 		MM_FREE( ptrResource );
 		MM_FREE( uncompr );
-
+		MM_FREE( newwall );
 		return;
 	}
 
@@ -532,7 +532,7 @@ PRIVATE void DecodeWall( W32 offset, W32 length, W32 *retval, const char *filena
 
 	MM_FREE( buffer );
 	MM_FREE( newwall );
-    MM_FREE( uncompr );
+	MM_FREE( uncompr );
 	MM_FREE( ptrResource );
 }
 
@@ -550,8 +550,8 @@ PRIVATE void decodeWalls( void )
 	for( i = 0 ; i < 35 ; ++i )
 	{
         wt_snprintf( name, sizeof( name ), "%s%c%.3d.tga", DIRPATHWALLS, PATH_SEP, i );
-		DecodeWall( noffset, length, &retval,  name );		
-		
+		DecodeWall( noffset, length, &retval,  name );
+
 		noffset += length + 4;
 		length = retval;
 	}
@@ -563,7 +563,7 @@ PRIVATE void decodeWalls( void )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef struct 
+typedef struct
 {
 	W16 Topy;
 	W16 Boty;
@@ -574,10 +574,10 @@ typedef struct
 /**
  * \brief Decode then save sprite data as TARGA image file.
  * \param[in] offset Offset from the start of the resource file in bytes.
- * \param[in] length Length of data block in bytes. 
+ * \param[in] length Length of data block in bytes.
  * \param[out] retval Length of next data block in bytes.
  * \param[in] filename Name of file to save as.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void DecodeSprite( W32 offset, W32 length, W32 *retval, const char *filename )
 {
@@ -609,7 +609,7 @@ PRIVATE void DecodeSprite( W32 offset, W32 length, W32 *retval, const char *file
 
 	Decode_LZSS( uncompr, ptrResource+2, uncomprLength );
 
-		
+
 	buffer = (W8 *)MM_MALLOC(128 * 128 * 4);
 	if( buffer == NULL )
 	{
@@ -622,20 +622,20 @@ PRIVATE void DecodeSprite( W32 offset, W32 length, W32 *retval, const char *file
 	}
 
 	memset( buffer, 0, 128 * 128 * 4 );
-	
+
 
 	ptr = (PW16)uncompr;
 
 	width = BigShort( ptr[ 0 ] );
-	
+
 	noffset = 64 - width / 2;
-	for( x = 0 ; x < width ; ++x ) 
+	for( x = 0 ; x < width ; ++x )
 	{
 		spriteRun *p = (spriteRun *)&ptr[ BigShort( ptr[ x + 1 ] ) / 2 ];
-		
-		while( p->Topy != 0xFFFF ) 
+
+		while( p->Topy != 0xFFFF )
 		{
-			for( i = BigShort( p->Topy ) / 2; i < BigShort( p->Boty ) / 2; ++i ) 
+			for( i = BigShort( p->Topy ) / 2; i < BigShort( p->Boty ) / 2; ++i )
 			{
 				*(buffer + (i * 128 + x + noffset) * 4 + 0) = macPalette[ uncompr[ BigShort( p->Shape ) + BigShort( p->Topy ) / 2 + (i - BigShort( p->Topy ) / 2) ] * 3 + 0 ];
 				*(buffer + (i * 128 + x + noffset) * 4 + 1) = macPalette[ uncompr[ BigShort( p->Shape ) + BigShort( p->Topy ) / 2 + (i - BigShort( p->Topy ) / 2) ] * 3 + 1 ];
@@ -656,7 +656,7 @@ PRIVATE void DecodeSprite( W32 offset, W32 length, W32 *retval, const char *file
 
 
 /**
- * \brief Extract sprites from resource fork. 
+ * \brief Extract sprites from resource fork.
  */
 PRIVATE void decodeSprites( void )
 {
@@ -669,7 +669,7 @@ PRIVATE void decodeSprites( void )
 	for( i = 0 ; i < 163 ; ++i )
 	{
         wt_snprintf( name, sizeof( name ), "%s%c%.3d.tga", DIRPATHSPRITES, PATH_SEP, i );
-		DecodeSprite( offset, length, &retval, name );		
+		DecodeSprite( offset, length, &retval, name );
 		offset += length + 4;
 		length = retval;
 	}
@@ -680,7 +680,7 @@ PRIVATE void decodeSprites( void )
 	for( i = 163 ; i < 171 ; ++i )
 	{
         wt_snprintf( name, sizeof( name ), "%s%c%.3d.tga", DIRPATHSPRITES, PATH_SEP, i );
-		DecodeSprite( offset, length, &retval, name );		
+		DecodeSprite( offset, length, &retval, name );
 		offset += length + 4;
 		length = retval;
 	}
@@ -690,7 +690,7 @@ PRIVATE void decodeSprites( void )
 	for( i = 171 ; i < 175 ; ++i )
 	{
         wt_snprintf( name, sizeof( name ), "%s%c%.3d.tga", DIRPATHSPRITES, PATH_SEP, i );
-		DecodeSprite( offset, length, &retval, name );		
+		DecodeSprite( offset, length, &retval, name );
 		offset += length + 4;
 		length = retval;
 	}
@@ -706,7 +706,7 @@ PRIVATE void decodeSprites( void )
 /**
  * \brief Convert item data into RGB raw data.
  * \param[in] data data chunk to decode.
- * \param[in] pal palette. 
+ * \param[in] pal palette.
  * \return On success pointer to RGB data, otherwise NULL.
  * \note src and dest can point to the same memory block.
  */
@@ -714,7 +714,7 @@ PRIVATE W8 *DecodeItem( W8 *data, W8 *pal )
 {
 	W8 *buffer, *mask, *ptr;
 	SW32 x, y, w, h;
-	
+
 	buffer = (W8 *)MM_MALLOC( 128 * 128 * 4 );
 	if( buffer == NULL )
 	{
@@ -722,22 +722,22 @@ PRIVATE W8 *DecodeItem( W8 *data, W8 *pal )
 
 		return NULL;
 	}
-	
+
 	memset( buffer, 0, 128 * 128 * 4 );
-	
+
 	x = data[ 0 ] << 8 | data[ 1 ];
 	y = data[ 2 ] << 8 | data[ 3 ];
 	w = data[ 4 ] << 8 | data[ 5 ];
 	h = data[ 6 ] << 8 | data[ 7 ];
-	
+
 	data += 8;
 	mask = data + w * h;
 	ptr = buffer + 512 * y + x * 4;
-	
-	do 
+
+	do
 	{
 		SW32 w2 = w;
-		do 
+		do
 		{
 			if( *mask == 0 )
 			{
@@ -755,7 +755,7 @@ PRIVATE W8 *DecodeItem( W8 *data, W8 *pal )
 		ptr += 4 * (128 - w);
 
 	} while( --h );
-	
+
 	return buffer;
 }
 
@@ -792,19 +792,19 @@ PRIVATE void decodeItems( void )
 
 		return;
 	}
-	
+
 	Decode_LZSS( (PW8)gameItems, ptrResource+4, uncomprLength );
 
 	MM_FREE( ptrResource );
 
 	ptrLong = (PW32)gameItems;
 	ptrDst = (PW8)gameItems;
-	for( i = 0; i < 47; ++i ) 
+	for( i = 0; i < 47; ++i )
 	{
 		uncomprLength = BigLong( ptrLong[ i ] );
 		gameItems[ i ] = ptrDst + uncomprLength;
 	}
-	
+
 	for( i = 0 ; i < 6 * 4 ; ++i )
 	{
         wt_snprintf( name, sizeof( name ), "%s%cweapon%.2d.tga", DIRPATHPICS, PATH_SEP, i );
@@ -817,8 +817,8 @@ PRIVATE void decodeItems( void )
 	for( i = 0 ; i < 47 ; ++i )
 	{
 		ptrShape1 = (PW16)gameItems[ i ];
-		width = BigShort( ptrShape1[ 0 ] );	
-		height = BigShort( ptrShape1[ 1 ] );	
+		width = BigShort( ptrShape1[ 0 ] );
+		height = BigShort( ptrShape1[ 1 ] );
 		ptrShape2 = (PW8)&ptrShape1[ 2 ];
 
 		buffer = (W8 *)MM_MALLOC( width * height * 3 );
@@ -842,7 +842,7 @@ PRIVATE void decodeItems( void )
 			i = 35;
 		}
 	}
-	
+
 	MM_FREE( gameItems );
 }
 
@@ -853,7 +853,7 @@ PRIVATE void decodeItems( void )
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Extract midi files from resource fork. 
+ * \brief Extract midi files from resource fork.
  */
 PRIVATE void decodeMidi( void )
 {
@@ -873,10 +873,11 @@ PRIVATE void decodeMidi( void )
 			continue;
 		}
 
-        wt_snprintf( name, sizeof( name ), "%s%c%d.mid", DIRPATHMIDI, PATH_SEP, i );
+		wt_snprintf( name, sizeof( name ), "%s%c%d.mid", DIRPATHMIDI, PATH_SEP, i );
 		fhandle = fopen( name, "wb" );
 		if( ! fhandle )
 		{
+			MM_FREE( ptrResource );
 			continue;
 		}
 
@@ -931,12 +932,12 @@ PRIVATE void DecodePICTimage( W32 offset, W32 length )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//	Parse MacBinary Header 
+//	Parse MacBinary Header
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Parse mac binary header. 
+ * \brief Parse mac binary header.
  * \return Returns true if this is Wolfenstein Mac binary file, otherwise false.
  */
 PRIVATE wtBoolean parseMacBinaryHead( void )
@@ -954,8 +955,8 @@ PRIVATE wtBoolean parseMacBinaryHead( void )
 	if( temp32 < 1 || temp32 > 31 )
 	{
 		return false;
-	}	
-	
+	}
+
 	fread( name, 1, temp32, fResHandle );
 	name[ temp32 - 1 ] = '\0';
 	if( strcmp( name, MACBINFILENAME ) != 0 )
@@ -973,7 +974,7 @@ PRIVATE wtBoolean parseMacBinaryHead( void )
 	if( strcmp( name, FILETYPECREATOR ) != 0 )
 	{
 		return false;
-	}	
+	}
 
 //
 //	Check Data Fork length
@@ -1010,7 +1011,7 @@ PRIVATE wtBoolean parseMacBinaryHead( void )
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * \brief Interface to Macintosh data extractor. 
+ * \brief Interface to Macintosh data extractor.
  */
 PUBLIC void Macintosh_Decoder( void )
 {
@@ -1019,7 +1020,7 @@ PUBLIC void Macintosh_Decoder( void )
 
 	wt_strlcpy( ext, MAC_FEXT, sizeof( ext ) );
 
-    	
+
 	fname = FS_FindFirst( ext );
 	FS_FindClose();
 
@@ -1050,7 +1051,7 @@ PUBLIC void Macintosh_Decoder( void )
 		fprintf( stderr, "Unknown MacBinary file\n" );
 
 		fclose( fResHandle );
-		
+
 		return;
 	}
 
@@ -1070,7 +1071,7 @@ PUBLIC void Macintosh_Decoder( void )
 	printf( "Decoding screen data..." );
 	decodeScreens();
     printf( "Done\n" );
-	
+
 
 	setPalette( GAMEPAL );
 
@@ -1083,7 +1084,7 @@ PUBLIC void Macintosh_Decoder( void )
     printf( "Done\n" );
 
 	printf( "Decoding item data..." );
-	decodeItems();	
+	decodeItems();
     printf( "Done\n" );
 
 	fclose( fResHandle );
@@ -1092,7 +1093,7 @@ PUBLIC void Macintosh_Decoder( void )
 
 
 /**
- * \brief Interface to Wolfenstein 3DO data extractor. 
+ * \brief Interface to Wolfenstein 3DO data extractor.
  */
 PUBLIC void wolf3do_decoder( void )
 {

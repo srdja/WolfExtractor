@@ -97,4 +97,3 @@ PUBLIC void CProgressBar( void )
 {
 	;
 }
-

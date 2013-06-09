@@ -22,7 +22,7 @@
 /**
  * \file wolfcore_decoder.c
  * \brief Wolfenstein 3-D front end to data file decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2006-2013
  */
 
@@ -44,23 +44,23 @@ PRIVATE const char *BASEDIR = "base/";
 extern W32 _gameVersion;
 
 
-W32 wolf_version = 0;   
+W32 wolf_version = 0;
 
 
 //	File extensions for various Wolfenstein 3-D powered games.
-//	Order must match the order of WDExtFlags. 
+//	Order must match the order of WDExtFlags.
 const char *WPFileExt[] =
 {
-	"*.WL6",	/* Wolfenstein 3-D */ 
-	"*.WL1",	/* Wolfenstein 3-D Shareware */	
+	"*.WL6",	/* Wolfenstein 3-D */
+	"*.WL1",	/* Wolfenstein 3-D Shareware */
 	"*.REZ",	/* Wolfenstein 3-D for Macintosh */
 	"*.3DO",	/* Wolfenstein 3-D for 3D0 */
 	"*.JAG",	/* Wolfenstein 3-D for Jaguar */
 	"*.SOD",	/* Spear of Destiny */
-	"*.SDM",	/* Spear of Destiny Demo */ 
+	"*.SDM",	/* Spear of Destiny Demo */
 	"*.BS6",	/* Blake Stone: Aliens of Gold */
 	"*.BS1",	/* Blake Stone: Aliens of Gold Shareware */
-	"*.VSI",	/* Blake Stone: Planet Strike */  
+	"*.VSI",	/* Blake Stone: Planet Strike */
 	"*.CO7",	/* Corridor 7 */
 	"*.DMO",	/* Corridor 7 Shareware */
 	"*.N3D",	/* Super 3D Noah's Ark */
@@ -99,11 +99,11 @@ extern void obcshare_decoder( void );
 
 
 //	File decoders for various Wolfenstein 3-D powered games.
-//	Order must match the order of WDExtFlags. 
-PRIVATE dataDecoder_t dd_decoder[] = 
+//	Order must match the order of WDExtFlags.
+PRIVATE dataDecoder_t dd_decoder[] =
 {
-	{ wolffull_decoder },	
-	{ wolfshare_decoder },		
+	{ wolffull_decoder },
+	{ wolfshare_decoder },
 	{ Macintosh_Decoder },
 	{ wolf3do_decoder },
 	{ wolf_jaguar_decoder },
@@ -127,68 +127,42 @@ PRIVATE W32 ddcodemax = sizeof( dd_decoder ) / sizeof( dd_decoder[ 0 ] );
 
 /**
  * \brief Create cache directories.
- * \return On success true, otherwise false. 
+ * \return On success true, otherwise false.
  */
 PUBLIC wtBoolean buildCacheDirectories( void )
 {
 	if( ! FS_CreateDirectory( DIR_PICS ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_WALLS ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_SPRITES ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_DSOUND ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_SOUNDFX ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_MUSIC ) )
-	{
 		return false;
-	}
 
 	if( ! FS_CreateDirectory( DIR_MAPS ) )
-	{
 		return false;
-	}
 
-    if( ! FS_CreateDirectory( DIR_GSCRIPTS ) )
-	{
+	if( ! FS_CreateDirectory( DIR_GSCRIPTS ) )
 		return false;
-	}
 
-
-    if( ! FS_CreateDirectory( DIR_SOD_SPRITES ) )
-	{
+	if( ! FS_CreateDirectory( DIR_SOD_SPRITES ) )
 		return false;
-	}
 
-    if( ! FS_CreateDirectory( DIR_SOD_SOUNDFX ) )
-	{
+	if( ! FS_CreateDirectory( DIR_SOD_SOUNDFX ) )
 		return false;
-	}
 
-    if( ! FS_CreateDirectory( DIR_SOD_DSOUND ) )
-	{
+	if( ! FS_CreateDirectory( DIR_SOD_DSOUND ) )
 		return false;
-	}
-
-    
-
 
 	return true;
 }
@@ -199,42 +173,26 @@ PUBLIC wtBoolean buildCacheDirectories( void )
  */
 PUBLIC void deleteCacheDirectories( void )
 {
-
 	if( ! FS_RemoveDirectory( DIR_PICS ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_PICS );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_WALLS ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_WALLS );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_SPRITES ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_SPRITES );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_DSOUND ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_DSOUND );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_SOUNDFX ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_SOUNDFX );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_MUSIC ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_MUSIC );
-	}
 
 	if( ! FS_RemoveDirectory( DIR_MAPS ) )
-	{
 		fprintf( stderr, "Unable to remove directory (%s)\n", DIR_MAPS );
-	}
-
 }
 
 
@@ -259,93 +217,93 @@ PUBLIC void deleteCacheDirectories( void )
 
 typedef struct fileCRC_LUT_s {
 
-    char *filename;
-    W32 crc;
+	char *filename;
+	W32 crc;
 
 } fileCRC_LUT_t;
 
 const fileCRC_LUT_t ACTIVISION_WL6_LUT[] =
 {
-    { "AUDIOHED.WL6",   0x2F3BCB70 },
-    { "AUDIOT.WL6",     0xC79EFD4C },
-    { "GAMEMAPS.WL6",   0xADA5C827 },
-    { "MAPHEAD.WL6",    0x015803E9 },
-    { "VGADICT.WL6",    0xAA22054E },
-    { "VGAGRAPH.WL6",   0xA4B1DE1D },
-    { "VGAHEAD.WL6",    0xAB2B44D3 },
-    { "VSWAP.WL6",      0xE610C664 },
+	{ "AUDIOHED.WL6",   0x2F3BCB70 },
+	{ "AUDIOT.WL6",     0xC79EFD4C },
+	{ "GAMEMAPS.WL6",   0xADA5C827 },
+	{ "MAPHEAD.WL6",    0x015803E9 },
+	{ "VGADICT.WL6",    0xAA22054E },
+	{ "VGAGRAPH.WL6",   0xA4B1DE1D },
+	{ "VGAHEAD.WL6",    0xAB2B44D3 },
+	{ "VSWAP.WL6",      0xE610C664 },
 
-    NULL
+	NULL
 };
 
 const fileCRC_LUT_t APOGEE_WL6_LUT[] =
 {
-    { "AUDIOHED.WL6",   0x2F3BCB70 },
-    { "AUDIOT.WL6",     0xC79EFD4C },
-    { "GAMEMAPS.WL6",   0xADA5C827 },
-    { "MAPHEAD.WL6",    0x015803E9 },
-    { "VGADICT.WL6",    0x8B4AD0F8 },
-    { "VGAGRAPH.WL6",   0xE0DF1EA0 },
-    { "VGAHEAD.WL6",    0x27EE37C4 },
-    { "VSWAP.WL6",      0x859E8FFC },
+	{ "AUDIOHED.WL6",   0x2F3BCB70 },
+	{ "AUDIOT.WL6",     0xC79EFD4C },
+	{ "GAMEMAPS.WL6",   0xADA5C827 },
+	{ "MAPHEAD.WL6",    0x015803E9 },
+	{ "VGADICT.WL6",    0x8B4AD0F8 },
+	{ "VGAGRAPH.WL6",   0xE0DF1EA0 },
+	{ "VGAHEAD.WL6",    0x27EE37C4 },
+	{ "VSWAP.WL6",      0x859E8FFC },
 
-    NULL
+	NULL
 };
 
 const fileCRC_LUT_t ID_SOFTWARE_V14_WL6_LUT[] =
 {
-    { "AUDIOHED.WL6",   0x2F3BCB70 },
-    { "AUDIOT.WL6",     0xC79EFD4C },
-    { "GAMEMAPS.WL6",   0xADA5C827 },
-    { "MAPHEAD.WL6",    0x015803E9 },
-    { "VGADICT.WL6",    0x8B4AD0F8 },
-    { "VGAGRAPH.WL6",   0xE0DF1EA0 },
-    { "VGAHEAD.WL6",    0x27EE37C4 },
-    { "VSWAP.WL6",      0x859E8FFC },
+	{ "AUDIOHED.WL6",   0x2F3BCB70 },
+	{ "AUDIOT.WL6",     0xC79EFD4C },
+	{ "GAMEMAPS.WL6",   0xADA5C827 },
+	{ "MAPHEAD.WL6",    0x015803E9 },
+	{ "VGADICT.WL6",    0x8B4AD0F8 },
+	{ "VGAGRAPH.WL6",   0xE0DF1EA0 },
+	{ "VGAHEAD.WL6",    0x27EE37C4 },
+	{ "VSWAP.WL6",      0x859E8FFC },
 
-    NULL
+	NULL
 };
 
 const fileCRC_LUT_t SHARE_V10_WL1_LUT[] =
 {
-    { "AUDIOHED.WL1",   0x384A9496 },
-    { "AUDIOT.WL1",     0xF65031A7 },
-    { "MAPTEMP.WL1",    0xF323BCE2 },
-    { "MAPHEAD.WL1",    0xE35F606A },
-    { "VGADICT.WL1",    0x3796B7E2 },
-    { "VGAGRAPH.WL1",   0xF431F4A4 },
-    { "VGAHEAD.WL1",    0x1343524F },
-    { "VSWAP.WL1",      0xF97FE230 },
+	{ "AUDIOHED.WL1",   0x384A9496 },
+	{ "AUDIOT.WL1",     0xF65031A7 },
+	{ "MAPTEMP.WL1",    0xF323BCE2 },
+	{ "MAPHEAD.WL1",    0xE35F606A },
+	{ "VGADICT.WL1",    0x3796B7E2 },
+	{ "VGAGRAPH.WL1",   0xF431F4A4 },
+	{ "VGAHEAD.WL1",    0x1343524F },
+	{ "VSWAP.WL1",      0xF97FE230 },
 
-    NULL
+	NULL
 };
 
 const fileCRC_LUT_t SHARE_V11_WL1_LUT[] =
 {
-    { "AUDIOHED.WL1",   0x52133DC4 },
-    { "AUDIOT.WL1",     0x73569F4D },
-    { "GAMEMAPS.WL1",   0x7750E1D4 },
-    { "MAPHEAD.WL1",    0x205253AC },
-    { "VGADICT.WL1",    0xFCAD3538 },
-    { "VGAGRAPH.WL1",   0x9CB49FEA },
-    { "VGAHEAD.WL1",    0xD3B22C3C },
-    { "VSWAP.WL1",      0xBB85F24C },
+	{ "AUDIOHED.WL1",   0x52133DC4 },
+	{ "AUDIOT.WL1",     0x73569F4D },
+	{ "GAMEMAPS.WL1",   0x7750E1D4 },
+	{ "MAPHEAD.WL1",    0x205253AC },
+	{ "VGADICT.WL1",    0xFCAD3538 },
+	{ "VGAGRAPH.WL1",   0x9CB49FEA },
+	{ "VGAHEAD.WL1",    0xD3B22C3C },
+	{ "VSWAP.WL1",      0xBB85F24C },
 
-    NULL
+	NULL
 };
 
 const fileCRC_LUT_t SHARE_V14_WL1_LUT[] =
 {
-    { "AUDIOHED.WL1",   0x52133DC4 },
-    { "AUDIOT.WL1",     0x87BFC399 },
-    { "GAMEMAPS.WL1",   0xCC53D341 },
-    { "MAPHEAD.WL1",    0x088F7551 },
-    { "VGADICT.WL1",    0x358AB877 },
-    { "VGAGRAPH.WL1",   0x746DA9F0 },
-    { "VGAHEAD.WL1",    0xA60A98F0 },
-    { "VSWAP.WL1",      0x85EFAC55 },
+	{ "AUDIOHED.WL1",   0x52133DC4 },
+	{ "AUDIOT.WL1",     0x87BFC399 },
+	{ "GAMEMAPS.WL1",   0xCC53D341 },
+	{ "MAPHEAD.WL1",    0x088F7551 },
+	{ "VGADICT.WL1",    0x358AB877 },
+	{ "VGAGRAPH.WL1",   0x746DA9F0 },
+	{ "VGAHEAD.WL1",    0xA60A98F0 },
+	{ "VSWAP.WL1",      0x85EFAC55 },
 
-    NULL
+	NULL
 };
 
 #define WL6_FILE_COUNT  8
@@ -355,114 +313,105 @@ const fileCRC_LUT_t SHARE_V14_WL1_LUT[] =
 
 PRIVATE void CheckFiles_WolfensteinFull( )
 {
-    W32 crc;
-    void *buffer;
-    int i;
-    SW32 length;
-    W32 countActivision = 0;
-    W32 countApogee = 0;
-    W32 countId_V14 = 0;
+	W32 crc;
+	void *buffer;
+	int i;
+	SW32 length;
+	W32 countActivision = 0;
+	W32 countApogee = 0;
+	W32 countId_V14 = 0;
 
-        
-    for( i = 0 ; i < WL6_FILE_COUNT ; i++ )
-    {
-        length = FS_FileLoad( ACTIVISION_WL6_LUT[ i ].filename, &buffer );
-        if( length < 0 )
-        {
-            continue;
-        }
 
-        crc = crc32( 0L, buffer, length );
-        if( crc == ACTIVISION_WL6_LUT[ i ].crc  )
-        {
-            countActivision++;
-        }
-        if( crc == APOGEE_WL6_LUT[ i ].crc  )
-        {
-            countApogee++;
-        }     
+	for( i = 0 ; i < WL6_FILE_COUNT ; i++ )
+	{
+		length = FS_FileLoad( ACTIVISION_WL6_LUT[ i ].filename, &buffer );
+		if( length < 0 )
+			continue;
 
-        MM_FREE( buffer );
-    }
-    
-    if( countActivision == WL6_FILE_COUNT )
-    {
-        wolf_version = ACTIVISION_WL6_V14;
-    }
-    if( countApogee == WL6_FILE_COUNT )
-    {
-        wolf_version = APOGEE_WL6_V14G;
-    }
+		crc = crc32( 0L, buffer, length );
+		if( crc == ACTIVISION_WL6_LUT[ i ].crc  ) {
+			countActivision++;
+		}
+		if( crc == APOGEE_WL6_LUT[ i ].crc  ) {
+			countApogee++;
+		}
 
+		MM_FREE( buffer );
+	}
+
+	if( countActivision == WL6_FILE_COUNT ) {
+		wolf_version = ACTIVISION_WL6_V14;
+	}
+	if( countApogee == WL6_FILE_COUNT ) {
+		wolf_version = APOGEE_WL6_V14G;
+	}
 }
 
 PRIVATE void CheckFiles_WolfensteinShare( )
 {
-    W32 crc;
-    void *buffer;
-    int i;
-    SW32 length;    
-    W32 count_V10 = 0;
-    W32 count_V11 = 0;
-    W32 count_V14 = 0;
+	W32 crc;
+	void *buffer;
+	int i;
+	SW32 length;
+	W32 count_V10 = 0;
+	W32 count_V11 = 0;
+	W32 count_V14 = 0;
 
-    for( i = 0 ; i < WL6_FILE_COUNT ; i++ )
-    {
-        length = FS_FileLoad( SHARE_V10_WL1_LUT[ i ].filename, &buffer );
-        if( length < 0 )
-        {
-            length = FS_FileLoad( SHARE_V11_WL1_LUT[ i ].filename, &buffer );
-            if( length < 0 )
-            {
-                continue;
-            }
-        }
+	for( i = 0 ; i < WL6_FILE_COUNT ; i++ )
+	{
+		length = FS_FileLoad( SHARE_V10_WL1_LUT[ i ].filename, &buffer );
+		if( length < 0 ) {
+			length = FS_FileLoad( SHARE_V11_WL1_LUT[ i ].filename, &buffer );
+			if( length < 0 ){
+				continue;
+			}
+		}
 
-        crc = crc32( 0L, buffer, length );        
-        if( crc == SHARE_V10_WL1_LUT[ i ].crc  )
-        {
-            count_V10++;
-        }
-        if( crc == SHARE_V11_WL1_LUT[ i ].crc  )
-        {
-            count_V11++;
-        }
-        if ( crc == SHARE_V14_WL1_LUT[ i ].crc )
-        {
-            count_V14++;
-        }
+		crc = crc32( 0L, buffer, length );
+		if( crc == SHARE_V10_WL1_LUT[ i ].crc  )
+		{
+			count_V10++;
+		}
+		if( crc == SHARE_V11_WL1_LUT[ i ].crc  )
+		{
+			count_V11++;
+		}
+		if ( crc == SHARE_V14_WL1_LUT[ i ].crc )
+		{
+			count_V14++;
+		}
+		MM_FREE( buffer );
+	}
 
-        MM_FREE( buffer );        
-    }
-
-    if( count_V10 == WL6_FILE_COUNT )
-    {
-        wolf_version = WL1_V10;
-    }
-    else if( count_V11 == WL6_FILE_COUNT )
-    {
-        wolf_version = WL1_V11;
-    }
-    else if( count_V14 == WL6_FILE_COUNT  )
-    {
-        wolf_version = WL1_V14;
-    }
-    
-
-
+	if( count_V10 == WL6_FILE_COUNT )
+	{
+		wolf_version = WL1_V10;
+	}
+	else if( count_V11 == WL6_FILE_COUNT )
+	{
+		wolf_version = WL1_V11;
+	}
+	else if( count_V14 == WL6_FILE_COUNT  )
+	{
+		wolf_version = WL1_V14;
+	}
 }
 
-
+/**
+ * Check which version of SOD this is.
+ *
+ * @FIXME STUB.
+ */
 PRIVATE void CheckFiles_SOD( )
 {
-    SW32 retValue;
-    W32 crc;
-    void *buffer;
-    int i;
-    W32 flag;
+	SW32 retValue;
+	W32 crc;
+	void *buffer;
+	int i;
+	W32 flag;
 
 
-    wolf_version = SPEAR_OF_DESTINY;
+	wolf_version = SPEAR_OF_DESTINY;
 
 // Figure out which version this is: SOD, Return to Danger, or Ultimate Challenge
 
@@ -485,22 +434,13 @@ PRIVATE void CheckFiles_SOD( )
  */
 PRIVATE void CheckFilesForIntegrity( W32 *flag )
 {
-    
-    if( *flag & FND_WOLF_FULL  )
-    {
-        
-        CheckFiles_WolfensteinFull();
-        
-    }
-    else if( *flag & FND_WOLF_SHARE )
-    {
-        CheckFiles_WolfensteinShare();
-    }
-    else if( *flag & FND_SPEAR_FULL )
-    {
-        CheckFiles_SOD();
-    }
-
+	if( *flag & FND_WOLF_FULL  ) {
+		CheckFiles_WolfensteinFull();
+	} else if( *flag & FND_WOLF_SHARE ) {
+		CheckFiles_WolfensteinShare();
+	} else if( *flag & FND_SPEAR_FULL ) {
+		CheckFiles_SOD();
+	}
 }
 
 /**
@@ -524,10 +464,10 @@ PRIVATE void CheckForDataFiles( W32 *flag )
 		/* check for upper case */
 		if( FS_FindFirst( wt_strupr( ext ) ) )
 		{
-			*flag |= BIT( i );    
+			*flag |= BIT( i );
 		}
 		FS_FindClose();
-	
+
 
 		/* check for lower case */
 		if( FS_FindFirst( wt_strlwr( ext ) ) )
@@ -544,25 +484,25 @@ PRIVATE void CheckForDataFiles( W32 *flag )
 /**
  * \brief Wolfenstein data decoder.
  * \return Nothing.
- * \note 1. Change into base directory. 
- *       2. Look for data files. 
+ * \note 1. Change into base directory.
+ *       2. Look for data files.
  *       3. Decode data files accordingly.
  */
 PUBLIC void wolfDataDecipher( void )
 {
-	W32 wolfExt_Flag = 0;	
+	W32 wolfExt_Flag = 0;
 	W32 temp;
-	W32 i;	
+	W32 i;
 
 
 	/* Change into base directory */
 	if( ! FS_ChangeCurrentDirectory( BASEDIR ) )
-	{		
+	{
 		printf( "Unable to change into directory (%s)\n", BASEDIR );
 
 		return;
 	}
-	
+
 	/* Look for data files in the base directory */
 	CheckForDataFiles( &wolfExt_Flag );
 
@@ -592,4 +532,3 @@ PUBLIC void wolfDataDecipher( void )
 	}
 
 }
-

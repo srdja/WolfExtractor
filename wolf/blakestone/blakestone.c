@@ -21,7 +21,7 @@
 /**
  * \file blakestone.c
  * \brief Blake Stone Aliens of Gold/Planet Strike data file decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2007-2013
  */
 
@@ -45,8 +45,8 @@ extern W8 blakestone_gamepal[];
 extern W32 _filterScale;
 
 /**
- * \brief Decodes Blake Stone Aliens of Gold Full Version data. 
- * \return Nothing. 
+ * \brief Decodes Blake Stone Aliens of Gold Full Version data.
+ * \return Nothing.
  */
 PUBLIC void blakestoneAGfull_decoder( void )
 {
@@ -64,7 +64,7 @@ PUBLIC void blakestoneAGfull_decoder( void )
 
 		return;
     }
-	
+
 	if( GFXFile_Setup( "VGADICT.BS6", "VGAHEAD.BS6", "VGAGRAPH.BS6" ) )
 	{
 		GFXFile_decodeFont( 1, 256, 128, DIR_PICS );
@@ -85,11 +85,11 @@ PUBLIC void blakestoneAGfull_decoder( void )
 		if( data )
 		{
 			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 29 );
-			
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
@@ -101,18 +101,18 @@ PUBLIC void blakestoneAGfull_decoder( void )
 		if( data )
 		{
             wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 30 );
-			
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
 	}
 	GFXFile_Shutdown();
 
-	
+
 
 	PageFile_ReduxDecodePageData( "VSWAP.BS6", DIR_WALLS, DIR_SPRITES, DIR_DSOUND, blakestone_gamepal );
 
@@ -124,12 +124,12 @@ PUBLIC void blakestoneAGfull_decoder( void )
 		AudioFile_ReduxDecodeMusic( 200, 210, DIR_MUSIC, NULL );
 	}
 	AudioFile_Shutdown();
-*/	
+*/
 }
 
 /**
- * \brief Decodes Blake Stone Aliens of Gold Shareware data. 
- * \return Nothing. 
+ * \brief Decodes Blake Stone Aliens of Gold Shareware data.
+ * \return Nothing.
  */
 PUBLIC void blakestoneAGshare_decoder( void )
 {
@@ -169,12 +169,12 @@ PUBLIC void blakestoneAGshare_decoder( void )
 		data = GFXFile_decodeChunk_RGB24( 29, &width, &height, tempPalette );
 		if( data )
 		{
-            wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 29 );
-			
+			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 29 );
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
@@ -185,12 +185,12 @@ PUBLIC void blakestoneAGshare_decoder( void )
 		data = GFXFile_decodeChunk_RGB24( 30, &width, &height, tempPalette );
 		if( data )
 		{
-            wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 30 );
-			
+			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 30 );
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
@@ -199,7 +199,7 @@ PUBLIC void blakestoneAGshare_decoder( void )
 
 
 	PageFile_ReduxDecodePageData( "VSWAP.BS1", DIR_WALLS, DIR_SPRITES, DIR_DSOUND, blakestone_gamepal );
-	
+
 /*
 	if( AudioFile_Setup( "AUDIOHED.BS1", "AUDIOT.BS1" ) )
 	{
@@ -213,8 +213,8 @@ PUBLIC void blakestoneAGshare_decoder( void )
 
 
 /**
- * \brief Decodes Blake Stone Planet Strike data. 
- * \return Nothing. 
+ * \brief Decodes Blake Stone Planet Strike data.
+ * \return Nothing.
  */
 PUBLIC void blakestonePS_decoder( void )
 {
@@ -233,7 +233,7 @@ PUBLIC void blakestonePS_decoder( void )
 
 		return;
     }
-	
+
 	if( GFXFile_Setup( "VGADICT.VSI", "VGAHEAD.VSI", "VGAGRAPH.VSI" ) )
 	{
 		GFXFile_decodeFont( 1, 256, 128, DIR_PICS );
@@ -244,24 +244,24 @@ PUBLIC void blakestonePS_decoder( void )
 
 
         GFXFile_decodeScript( 216, 248, DIR_GSCRIPTS );
-		
+
 
 		GFXFile_decodeGFX( 6, 197, blakestone_gamepal, DIR_PICS );
-	
-		
-		
+
+
+
 		GFXFile_cacheChunk( 201 );
 		tempPalette = (PW8)GFXFile_getChunk( 201 );
 
 		data = GFXFile_decodeChunk_RGB24( 53, &width, &height, tempPalette );
 		if( data )
 		{
-            wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 53 );
-			
+			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 53 );
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
@@ -272,31 +272,30 @@ PUBLIC void blakestonePS_decoder( void )
 		data = GFXFile_decodeChunk_RGB24( 143, &width, &height, tempPalette );
 		if( data )
 		{
-            wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 143 );
-			
+			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 143 );
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
 
 		data = GFXFile_decodeChunk_RGB24( 144, &width, &height, tempPalette );
-		if( data )
-		{
-            wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 144 );
-			
+		if( data ) {
+			wt_snprintf( fname, sizeof( fname ), "%s%c%.3d.tga", DIR_PICS, PATH_SEP, 144 );
+
 			RGB24_adjustBrightness( data, width * height * 3 );
-			
+
 			TGA_write( fname, 24, width, height, data, 0, 1 );
-			
+
 			MM_FREE( data );
 		}
-	
+
 	}
 	GFXFile_Shutdown();
 
-	
+
 
 	PageFile_ReduxDecodePageData( "VSWAP.VSI", DIR_WALLS, DIR_SPRITES, DIR_DSOUND, blakestone_gamepal );
 

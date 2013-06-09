@@ -279,4 +279,3 @@ PUBLIC void CProgressBar( void )
 
 	++index;
 }
-

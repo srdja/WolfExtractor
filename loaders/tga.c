@@ -22,7 +22,7 @@
 /**
  * \file tga.c
  * \brief Handle Targa file format.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2004-2005
  * \note Portion of this code was derived from The GIMP -- an image manipulation program, and was originally written by Spencer Kimball and Peter Mattis.
  */
@@ -40,8 +40,8 @@
  * \param[in] fp Pointer to valid FILE structure.
  * \param[in] buffer Scanline data.
  * \param[in] width Image scanline width.
- * \param[in] bytes Bytes per pixel.	
- * \return Nothing. 
+ * \param[in] bytes Bytes per pixel.
+ * \return Nothing.
  */
 PRIVATE void rle_write( FILE   *fp,
 						W8	*buffer,
@@ -132,7 +132,7 @@ PRIVATE void rle_write( FILE   *fp,
  * \param[in] rle Run Length encode? 1 yes, 0 no.
  * \return 0 on error, otherwise 1.
  */
-PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height, 
+PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
             void *Data, W8 upsideDown, W8 rle )
 {
     W16	i, x, y, BytesPerPixel;
@@ -144,15 +144,15 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 
 	BytesPerPixel = bpp >> 3;
 
-	filestream = fopen( filename, "wb" );   
+	filestream = fopen( filename, "wb" );
     if( filestream == NULL )
 	{
 		fprintf( stderr, "Could not open file (%s) for write!\n", filename );
 
 		return 0;
 	}
-	
-	memset( header, 0, 18 );    
+
+	memset( header, 0, 18 );
     header[ 2 ] = rle ? 10 : 2;
 
     header[ 12 ] = (W8)(width & 255);	/* width low */
@@ -167,13 +167,13 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 	{
 		header[ 17 ] |= 1 << 5; // Image Descriptor
     }
-    
-
-	fwrite( header, sizeof( W8 ), sizeof( header ), filestream  );	
 
 
+	fwrite( header, sizeof( W8 ), sizeof( header ), filestream  );
 
-	scanline = (PW8) MM_MALLOC( width * BytesPerPixel );	
+
+
+	scanline = (PW8) MM_MALLOC( width * BytesPerPixel );
     if( scanline == NULL )
 	{
 		fclose( filestream );
@@ -182,7 +182,7 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 	}
 
 	for( y = 0 ; y < height ; ++y )
-	{		
+	{
 		W32 k = 0;
 
 		for( i = 0 ; i < (width * BytesPerPixel) ; ++i )
@@ -190,8 +190,8 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 			scanline[ k++ ] = ptr[ (height - y - 1) * width * BytesPerPixel + i ];
 		}
 
-	
-		
+
+
 		if( bpp == 24 || bpp == 32 )
 		{
 			// swap rgb to bgr
@@ -203,7 +203,7 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 			}
 		}
 
-		
+
 		if( rle )
 		{
 			rle_write( filestream, scanline, width, BytesPerPixel );
@@ -213,10 +213,10 @@ PUBLIC W8 TGA_write( const char *filename, W16 bpp, W32 width, W32 height,
 			fwrite( scanline, sizeof( W8 ), width * BytesPerPixel, filestream );
 		}
 	}
-	
-    MM_FREE( scanline );
 
-    fclose( filestream );
-	
+	MM_FREE( scanline );
+
+	fclose( filestream );
+
 	return 1;
 }

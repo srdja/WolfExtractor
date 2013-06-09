@@ -21,7 +21,7 @@
 /**
  * \file wolfcore_pm.c
  * \brief Wolfenstein 3-D page file decoder.
- * \author Michael Liebscher 
+ * \author Michael Liebscher
  * \date 2007-2009
  * \note Portion of this code was derived from Wolfenstein 3-D, and was originally written by Id Software, Inc.
  */
@@ -53,7 +53,7 @@ typedef	struct
 {
     W32  offset;	/* Offset of chunk into file */
     W16  length;	/* Length of the chunk */
-			
+
 } PageList_t;
 
 
@@ -74,10 +74,10 @@ PRIVATE FILE		*file_handle_page = NULL;
 /**
  * \brief Setup page file for decoding.
  * \param[in] pagefname Source buffer to convert from
- * \param[out] nBlocks Destination buffer to convert to. 
+ * \param[out] nBlocks Destination buffer to convert to.
  * \param[out] SpriteStart Offset index for sprite data.
  * \param[out] SoundStart Offset index for sound data.
- * \return On success true, otherwise false. 
+ * \return On success true, otherwise false.
  */
 PUBLIC wtBoolean PageFile_Setup( const char *pagefname, W32 *nBlocks, W32 *SpriteStart, W32 *SoundStart )
 {
@@ -93,7 +93,7 @@ PUBLIC wtBoolean PageFile_Setup( const char *pagefname, W32 *nBlocks, W32 *Sprit
 	W32 PMSpriteStart;
 	W32 PMSoundStart;
 
-	
+
 	if( ! pagefname || ! *pagefname )
 	{
 		fprintf( stderr, "[PageFile_Setup]: Invalid file name\n" );
@@ -164,7 +164,7 @@ PUBLIC wtBoolean PageFile_Setup( const char *pagefname, W32 *nBlocks, W32 *Sprit
 	offsetptr = (PW32) buf;
 	for( i = 0, page = PMPages; i < PMNumBlocks; i++, page++ )
 	{
-		page->offset = LittleLong( *offsetptr++ ); 
+		page->offset = LittleLong( *offsetptr++ );
 	}
 	MM_FREE( buf );
 
@@ -182,62 +182,42 @@ PUBLIC wtBoolean PageFile_Setup( const char *pagefname, W32 *nBlocks, W32 *Sprit
 	{
 		fprintf( stderr, "Could not read chunk lengths from file (%s)\n", temp_fileName );
 	}
-	
-    lengthptr = (PW16)buf;
+
+	lengthptr = (PW16)buf;
 	for( i = 0, page = PMPages ; i < PMNumBlocks ; ++i, page++ )
 	{
 		page->length = LittleShort( *lengthptr++ );
 	}
-	
-    MM_FREE( buf );
 
-
-
+	MM_FREE( buf );
 	MM_FREE( temp_fileName );
-
 
 	*nBlocks = PMNumBlocks;
 	*SpriteStart = PMSpriteStart;
 	*SoundStart = PMSoundStart;
-    
-    return true;
+
+	return true;
 
 PMSetupFailure:
 
-	if( temp_fileName )
-	{
-		MM_FREE( temp_fileName );
-	}
-
-	if( PMPages )
-	{
-		MM_FREE( PMPages );
-	}
-
-	if( buf )
-	{
-		MM_FREE( buf );
-	}
+	MM_FREE( temp_fileName );
+	MM_FREE( PMPages );
+	MM_FREE( buf );
 
 	return false;
-
 }
 
 /**
- * \brief Shutdown page cache. 
+ * \brief Shutdown page cache.
  */
 PUBLIC void PageFile_Shutdown( void )
 {
-    if( file_handle_page )
-    {
-        fclose( file_handle_page );
-        file_handle_page = NULL;
-    }
-  
-    if( PMPages )
-    {
-        MM_FREE( PMPages );
-    } 
+	if( file_handle_page ) {
+		fclose( file_handle_page );
+		file_handle_page = NULL;
+	}
+
+	MM_FREE( PMPages );
 }
 
 /**
@@ -245,21 +225,21 @@ PUBLIC void PageFile_Shutdown( void )
  * \param[out] buf Storage location for data.
  * \param[in] offset Number of bytes from beginning of file.
  * \param[in] length Maximum number of items to be read.
- * \return Nothing. 
+ * \return Nothing.
  */
 PRIVATE void PageFile_ReadFromFile( W8 *buf, SW32 offset, W32 length )
 {
 	if( ! buf )
 	{
 		fprintf( stderr, "[PageFile_ReadFromFile]: NULL pointer\n" );
-		
+
 		return;
 	}
 
 	if( ! offset )
 	{
 		fprintf( stderr, "[PageFile_ReadFromFile]: Zero offset\n" );
-		
+
 		return;
 	}
 
@@ -270,23 +250,23 @@ PRIVATE void PageFile_ReadFromFile( W8 *buf, SW32 offset, W32 length )
 	if( fseek( file_handle_page, offset, SEEK_SET ) )
 	{
 		fprintf( stderr, "[PageFile_ReadFromFile]: Seek failed\n" );
-		
+
 		return;
 	}
 
 	if( ! fread( buf, 1, length, file_handle_page ) )
 	{
 		fprintf( stderr, "[PageFile_ReadFromFile]: Read failed\n" );
-		
+
 		return;
 	}
 }
 
 /**
- * \brief Get Page file raw data. 
+ * \brief Get Page file raw data.
  * \param[in] pagenum Page to load.
  * \param[in] length Length of data.
- * \return On success pointer to data block, otherwise NULL. 
+ * \return On success pointer to data block, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE.
  */
 PUBLIC void *PageFile_getPage( W32 pagenum, W32 *length )
@@ -301,17 +281,17 @@ PUBLIC void *PageFile_getPage( W32 pagenum, W32 *length )
 
     page = &PMPages[ pagenum ];
 
-	
+
 	pageOffset = LittleLong( page->offset );
     pageLength = LittleShort( page->length );
-	
+
 
 	if( pageLength == 0 )
 	{
 		return NULL;
-	}    
+	}
 
-    addr = (PW8)MM_MALLOC( pageLength ); 
+    addr = (PW8)MM_MALLOC( pageLength );
 	if( addr == NULL )
 	{
 		return NULL;
@@ -320,15 +300,15 @@ PUBLIC void *PageFile_getPage( W32 pagenum, W32 *length )
     PageFile_ReadFromFile( addr, pageOffset, pageLength );
 
 	*length = pageLength;
-	
+
     return addr;
 }
 
 /**
- * \brief Decodes raw wall data into RGB-24. 
+ * \brief Decodes raw wall data into RGB-24.
  * \param[in] data Raw wall data.
  * \param[in] palette Palette array.
- * \return On success pointer to raw image data block, otherwise NULL. 
+ * \return On success pointer to raw image data block, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE.
  */
 PUBLIC void *PageFile_decodeWall_RGB24( W8 *data, W8 *palette )
@@ -362,10 +342,10 @@ PUBLIC void *PageFile_decodeWall_RGB24( W8 *data, W8 *palette )
 }
 
 /**
- * \brief Decodes raw wall data into RGB-32. 
+ * \brief Decodes raw wall data into RGB-32.
  * \param[in] data Raw wall data.
  * \param[in] palette Palette array.
- * \return On success pointer to raw image data block, otherwise NULL. 
+ * \return On success pointer to raw image data block, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE.
  */
 PUBLIC void *PageFile_decodeWall_RGB32( W8 *data, W8 *palette )
@@ -401,10 +381,10 @@ PUBLIC void *PageFile_decodeWall_RGB32( W8 *data, W8 *palette )
 }
 
 /**
- * \brief Decodes raw sprite data into RGB-24. 
+ * \brief Decodes raw sprite data into RGB-24.
  * \param[in] data Raw sprite data.
  * \param[in] palette Palette array.
- * \return On success pointer to raw image data block, otherwise NULL. 
+ * \return On success pointer to raw image data block, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE.
  */
 PUBLIC void *PageFile_decodeSprite_RGB24( W8 *data, W8 *palette )
@@ -428,9 +408,9 @@ PUBLIC void *PageFile_decodeSprite_RGB24( W8 *data, W8 *palette )
 
 	/* all transparent at the beginning */
 	for( x = 0 ; x < (64 * 64 * 3) ; x += 3 )
-	{              			
+	{
 		ptr = buffer + x;
-		
+
 		ptr[ 0 ] = 0xFF;		/* R */
 		ptr[ 1 ] = 0x00;		/* G */
 		ptr[ 2 ] = 0xFF;		/* B */
@@ -452,9 +432,9 @@ PUBLIC void *PageFile_decodeSprite_RGB24( W8 *data, W8 *palette )
 			for( y = (W32)(LittleShort( linecmds[ 2 ] ) / 2) ; y < (W32)(LittleShort( linecmds[ 0 ] ) / 2) ; ++y, ++i )
 			{
 				temp = data[ i ] * 3;
-		
+
 				ptr = buffer + (y * 64 + x) * 3;
-		
+
 				ptr[ 0 ] = palette[ temp + 0 ];		/* R */
 				ptr[ 1 ] = palette[ temp + 1 ];		/* G */
 				ptr[ 2 ] = palette[ temp + 2 ];		/* B */
@@ -466,10 +446,10 @@ PUBLIC void *PageFile_decodeSprite_RGB24( W8 *data, W8 *palette )
 }
 
 /**
- * \brief Decodes raw sprite data into RGB32. 
+ * \brief Decodes raw sprite data into RGB32.
  * \param[in] data Raw sprite data.
  * \param[in] palette Palette array.
- * \return On success pointer to raw image data block, otherwise NULL. 
+ * \return On success pointer to raw image data block, otherwise NULL.
  * \note Caller is responsible for freeing allocated data by calling MM_FREE.
  */
 PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
@@ -480,9 +460,9 @@ PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
 	W8 *buffer;
 	W8 *ptr;
 	W16 *cmdptr;
-    SW16 *linecmds;
-	
-    t_compshape *shape;
+	SW16 *linecmds;
+
+	t_compshape *shape;
 
 	W16 leftpix, rightpix;
 
@@ -492,11 +472,11 @@ PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
 		return NULL;
 	}
 
-	
+
 	for( x = 0 ; x < (64 * 64 * 4) ; x += 4 )
-	{              			
+	{
 		ptr = buffer + x;
-		
+
 		ptr[ 0 ] = 0xFF;	/* R */
 		ptr[ 1 ] = 0x00;	/* G */
 		ptr[ 2 ] = 0xFF;	/* B */
@@ -510,7 +490,7 @@ PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
 
 	cmdptr = shape->dataofs;
 	for( x = leftpix ; x <= rightpix ; ++x )
-	{		
+	{
         linecmds = (PSW16)(data + LittleShort( *cmdptr ));
 		cmdptr++;
 		for( ; LittleShort( *linecmds ) ; linecmds += 3 )
@@ -519,9 +499,9 @@ PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
 			for( y = (W32)(LittleShort( linecmds[ 2 ] ) / 2) ; y < (W32)(LittleShort( linecmds[ 0 ] ) / 2) ; ++y, ++i )
 			{
 				temp = data[ i ] * 3;
-		
+
 				ptr = buffer + (y * 64 + x) * 4;
-		
+
 				ptr[ 0 ] = palette[ temp + 0 ];		/* R */
 				ptr[ 1 ] = palette[ temp + 1 ];		/* G */
 				ptr[ 2 ] = palette[ temp + 2 ];		/* B */
@@ -535,7 +515,7 @@ PUBLIC void *PageFile_decodeSprite_RGB32( W8 *data, W8 *palette )
 
 /**
  * \brief Remap sprite index number based on game version
- * \param[in] index Sprite index. 
+ * \param[in] index Sprite index.
  * \return Remapped sprite index.
  */
 PRIVATE int GetSpriteMappedIndex( int index )
@@ -544,7 +524,7 @@ PRIVATE int GetSpriteMappedIndex( int index )
 
     if( wolf_version == ACTIVISION_WL6_V14 || wolf_version == ID_SOFTWARE_WL6_V14 )
     {
-	
+
 	    if( index >= 50 && index < 385 )
 	    {
 		    returnValue = index + 4;
@@ -593,18 +573,18 @@ PRIVATE int GetSpriteMappedIndex( int index )
     }
     else if( wolf_version >= SPEAR_OF_DESTINY )
     {
-        if( index >= 326 ) 
+        if( index >= 326 )
 	    {
 		    returnValue = index + 113;
-	    }        
+	    }
     }
-	
+
 	return returnValue;
 }
 
 /**
  * \brief Remap wall index number based on game version
- * \param[in] index Wall index. 
+ * \param[in] index Wall index.
  * \return Remapped wall index.
  */
 PRIVATE int GetWallMappedIndex( int index )
@@ -629,12 +609,12 @@ PRIVATE int GetWallMappedIndex( int index )
     {
 
     }
-		
+
 	return returnValue;
-} 
+}
 
 /**
- * \brief Redux the Page file data. 
+ * \brief Redux the Page file data.
  * \param[in] vsfname data file name.
  * \param[in] wallPath Path to save wall data.
  * \param[in] spritePath Path to save sprite data.
@@ -676,7 +656,7 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 			continue;
 		}
 
-		decdata = PageFile_decodeWall_RGB32( (PW8)data, palette );		
+		decdata = PageFile_decodeWall_RGB32( (PW8)data, palette );
 		if( decdata == NULL )
 		{
 			fprintf( stderr, "[PageFile_ReduxDecodePageData]: Unable to decode wall (%d).\n", i );
@@ -685,7 +665,7 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 
 			continue;
 		}
-		
+
 
 		if( _filterScale > 0 )
 		{
@@ -696,20 +676,20 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 			{
 				continue;
 			}
-            
 
-			// Scale2x                        
+
+			// Scale2x
 		        if( _filterScale == 1 )
 			{
 		                scale( 2, (void *)scaledImgBuf, 128 * 4, decdata, 64 * 4, 4, 64, 64 );
-				RGB32toRGB24( (const PW8)scaledImgBuf, (PW8)scaledImgBuf, 128 * 128 * 4 );          
+				RGB32toRGB24( (const PW8)scaledImgBuf, (PW8)scaledImgBuf, 128 * 128 * 4 );
 			} else {
 		                // hq2x
 		                RGB32toRGB24( (const PW8)decdata, (PW8)decdata, 64 * 64 * 4 );
-		                RGB24toBGR565( decdata, decdata, 64 * 64 * 3 );       
+		                RGB24toBGR565( decdata, decdata, 64 * 64 * 3 );
 				hq2x_32( (PW8)decdata, (PW8)scaledImgBuf, 64, 64, 64 * 2 * 4  );
         		        RGB32toRGB24( (const PW8)scaledImgBuf, (PW8)scaledImgBuf, 128 * 128 * 4 );
-                           
+
         		}
 
     		        wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", wallPath, PATH_SEP, GetWallMappedIndex( i ) );
@@ -748,50 +728,34 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 
 			continue;
 		}
-		
+
 		if( _filterScale_Sprites > 0 )
 		{
 			W8 *scaledImgBuf;
 
 			scaledImgBuf = (PW8) MM_MALLOC( 128 * 128 * 4 );
-			if( NULL == scaledImgBuf )
-			{
+			if( NULL == scaledImgBuf ) {
+				MM_FREE( data );
+				MM_FREE( decdata );
 				continue;
 			}
+			if( _filterScale_Sprites == 1 ) {
+				scale( 2, (void *)scaledImgBuf, 128 * 4, decdata, 64 * 4, 4, 64, 64 );
+			} else {
+			// hq2x
+				RGB32toRGB24( (const PW8)decdata, (PW8)decdata, 64 * 64 * 4 );
+				RGB24toBGR565( decdata, decdata, 64 * 64 * 3 );
+				hq2x_32( (PW8)decdata, (PW8)scaledImgBuf, 64, 64, 64 * 2 * 4  );
+				ReduxAlphaChannel_hq2x( scaledImgBuf, 128, 128 );
+			}
 
-            
-            if( _filterScale_Sprites == 1 )
-            {
-
-                scale( 2, (void *)scaledImgBuf, 128 * 4, decdata, 64 * 4, 4, 64, 64 );
-			    
-            }
-            else
-            {
-
-                // hq2x
-                RGB32toRGB24( (const PW8)decdata, (PW8)decdata, 64 * 64 * 4 );
-                RGB24toBGR565( decdata, decdata, 64 * 64 * 3 ); 
-			    hq2x_32( (PW8)decdata, (PW8)scaledImgBuf, 64, 64, 64 * 2 * 4  );
-
-                ReduxAlphaChannel_hq2x( scaledImgBuf, 128, 128 );
-                
-            }
-
-            wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", spritePath, PATH_SEP, GetSpriteMappedIndex( i - SpriteStart ) );
+			wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", spritePath, PATH_SEP, GetSpriteMappedIndex( i - SpriteStart ) );
 			TGA_write( tempFileName, 32, 128, 128, scaledImgBuf, 0, 1 );
-
 			MM_FREE( scaledImgBuf );
-
-		}
-		else
-		{
-			
-            wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", spritePath, PATH_SEP, GetSpriteMappedIndex( i - SpriteStart )  );
+		} else {
+			wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.tga", spritePath, PATH_SEP, GetSpriteMappedIndex( i - SpriteStart )  );
 			TGA_write( tempFileName, 32, 64, 64, decdata, 0, 1 );
-
 		}
-
 		MM_FREE( data );
 		MM_FREE( decdata );
 	}
@@ -808,7 +772,7 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 
 		return false;
 	}
-	    
+
 	totallength = 0;
 	for( i = SoundStart ; i < NumBlocks ; ++i )
 	{
@@ -836,17 +800,17 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 
 
 		if( length < 4096 )
-		{    
-            
+		{
+
 			wt_snprintf( tempFileName, sizeof( tempFileName ), "%s%c%.3d.wav", soundPath, PATH_SEP, i - SoundStart );
-			wav_write( tempFileName, soundBuffer, totallength, 1, SAMPLERATE, 1 ); 
-                       
-			
+			wav_write( tempFileName, soundBuffer, totallength, 1, SAMPLERATE, 1 );
+
+
 			totallength = 0;
 
-		} 
+		}
 
-		
+
 		MM_FREE( data );
 
 
@@ -854,8 +818,9 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 	MM_FREE( soundBuffer );
 
 	PageFile_Shutdown();
+	MM_FREE( data );
 
-    printf( "Done\n" );
+	printf( "Done\n" );
 
 	return true;
 

@@ -133,9 +133,7 @@ PRIVATE zipHead_t *Pak_WriteLocalFileChunk( const char *filename, FILE *fout )
 	{
 		fprintf( stderr, "[Pak_WriteLocalFileChunk]: Could not open file (%s)\n", filename );
 		MM_FREE( zentry );
-		if( data ){
-			MM_FREE( data );
-		}
+		MM_FREE( data );
 
 		return NULL;
 	}
