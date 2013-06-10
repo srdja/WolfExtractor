@@ -306,7 +306,7 @@ PRIVATE wtBoolean W_AddFile ( const char *filename )
 
 		strncpy ( lump_p->name, filelumpPointer->name, 8 );
 	}
-
+	MM_FREE( lumpinfo );
 	return true;
 }
 

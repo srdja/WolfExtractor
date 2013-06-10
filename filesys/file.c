@@ -49,7 +49,7 @@ PUBLIC SW32 FS_FileLength( FILE *stream )
 	SW32	cur;	/* Current position of file pointer */
 	SW32	end;
 
-	cur = ftell( stream );
+	cur = ftell( stream ); /* Save current position. */
 	if( cur == -1 )
 	{
 		return -1;
@@ -57,7 +57,7 @@ PUBLIC SW32 FS_FileLength( FILE *stream )
 	fseek( stream, 0, SEEK_END );
 
 	end = ftell( stream );
-	fseek( stream, cur, SEEK_SET );
+	fseek( stream, cur, SEEK_SET ); /* Restore original position. */
 
 	return end;
 }
@@ -92,7 +92,6 @@ PUBLIC SW32 FS_FileOpen( const char *filename, FILE **file )
 	}
 
 	return FS_FileLength( *file );
-
 }
 
 /**

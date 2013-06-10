@@ -72,7 +72,7 @@ PUBLIC wtBoolean zip_WriteLocalChunk( zipHead_t *z, FILE *f )
 
 	temp32 = LittleLong( z->timedate );
 	retval += fwrite( &temp32, 1, 4, f );
-	
+
 	temp32 = LittleLong( z->crc32 );
 	retval += fwrite( &temp32, 1, 4, f );
 
@@ -94,7 +94,7 @@ PUBLIC wtBoolean zip_WriteLocalChunk( zipHead_t *z, FILE *f )
 	}
 
 	if( fwrite( z->filename, 1, z->filename_length, f ) != z->filename_length ||
-		(z->extrafield && fwrite( z->extrafield, 1, z->extrafield_length, f) != z->extrafield_length) )
+		(z->extrafield && ( fwrite( z->extrafield, 1, z->extrafield_length, f) != z->extrafield_length) ) )
 	{
 		return false;
 	}
@@ -173,7 +173,7 @@ PUBLIC wtBoolean zip_WriteCentralChunk( zipHead_t *z, FILE *f )
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -192,7 +192,7 @@ PUBLIC wtBoolean zip_WriteEndChunk( W16 num, W32 size, W32 offset, W16 len, char
 	W32 temp32;
 	W16 temp16;
 	W32 retval;
-	
+
 	temp32 = LittleLong( SIG_END );
 	retval = fwrite( &temp32, 1, 4, f );
 

@@ -96,7 +96,7 @@ PRIVATE SW32 getGFXFilePosition( W32 chunk )
 	if( value == 0xffffffl )
 	{
 		value = -1;
-    }
+	}
 
 	return value;
 }
@@ -111,7 +111,7 @@ PRIVATE SW32 getGFXChunkLength( W32 chunk )
 {
 	fseek( file_handle_gfx, getGFXFilePosition( chunk ) + sizeof( W32 ), SEEK_SET );
 
-    return ( getGFXFilePosition( chunk + 1 ) - getGFXFilePosition( chunk ) - 4 );
+	return ( getGFXFilePosition( chunk + 1 ) - getGFXFilePosition( chunk ) - 4 );
 }
 
 
@@ -397,9 +397,7 @@ PUBLIC wtBoolean GFXFile_Setup( const char *dictfname, const char *headfname, co
 
 	MM_FREE( compressed_segment );
 
-
-
-    return true;
+	return true;
 }
 
 /**

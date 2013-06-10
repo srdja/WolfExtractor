@@ -674,6 +674,8 @@ PUBLIC wtBoolean PageFile_ReduxDecodePageData( const char *vsfname, const char *
 			scaledImgBuf = (void *) MM_MALLOC( 128 * 128 * 4 );
 			if( NULL == scaledImgBuf )
 			{
+				MM_FREE( data );
+				MM_FREE( decdata );
 				continue;
 			}
 

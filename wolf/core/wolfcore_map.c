@@ -261,171 +261,165 @@ PUBLIC wtBoolean MapFile_ReduxDecodeMapData( const char *fmaphead, const char *f
 		stime = parTimes[ i ].timestr;
 
 
-        //
-        // Read in map data
-        //
+		//
+		// Read in map data
+		//
 
-        fread( &offsetin, sizeof( W32 ), 3, map_file_handle );
-        offsetin[ 0 ] = LittleLong( offsetin[ 0 ] );
-        offsetin[ 1 ] = LittleLong( offsetin[ 1 ] );
-        offsetin[ 2 ] = LittleLong( offsetin[ 2 ] );
-        fread( &length, sizeof( W16 ), 3, map_file_handle );
-        length[ 0 ] = LittleShort( length[ 0 ] );
-        length[ 1 ] = LittleShort( length[ 1 ] );
-        length[ 2 ] = LittleShort( length[ 2 ] );
+		fread( &offsetin, sizeof( W32 ), 3, map_file_handle );
+		offsetin[ 0 ] = LittleLong( offsetin[ 0 ] );
+		offsetin[ 1 ] = LittleLong( offsetin[ 1 ] );
+		offsetin[ 2 ] = LittleLong( offsetin[ 2 ] );
+		fread( &length, sizeof( W16 ), 3, map_file_handle );
+		length[ 0 ] = LittleShort( length[ 0 ] );
+		length[ 1 ] = LittleShort( length[ 1 ] );
+		length[ 2 ] = LittleShort( length[ 2 ] );
 
-        fread( &w, sizeof( W16 ), 1, map_file_handle );
-        w = LittleShort( w );
-        fread( &h, sizeof( W16 ), 1, map_file_handle );
-        h = LittleShort( h );
+		fread( &w, sizeof( W16 ), 1, map_file_handle );
+		w = LittleShort( w );
+		fread( &h, sizeof( W16 ), 1, map_file_handle );
+		h = LittleShort( h );
 
-        fread( name, sizeof( W8 ), 16, map_file_handle );
-        fread( sig, sizeof( W8 ), 4, map_file_handle );
-
-
-        //
-        // Output header
-        //
-        // Map file header signature
-        fwrite( sig, sizeof( W8 ), 4, fout );
-
-        // RLE Word tag
-        Rtag = LittleShort( Rtag );
-        fwrite( &Rtag, sizeof( W16 ), 1, fout );
-
-        // Max Width
-        w = LittleShort( w );
-        fwrite( &w, sizeof( W16 ), 1, fout );
-
-        // Max Height
-        h = LittleShort( h );
-        fwrite( &h, sizeof( W16 ), 1, fout );
-
-        // Ceiling Colour
-        ceiling = LittleLong( ceiling );
-        fwrite( &ceiling, sizeof( W32 ), 1, fout );
-
-        // Floor Colour
-        floor = LittleLong( floor );
-        fwrite( &floor, sizeof( W32 ), 1, fout );
-
-        // Length of layers
-        temp = LittleShort( length[ 0 ] );
-        fwrite( &temp, sizeof( W16 ), 1, fout );	// Length One
-        temp = LittleShort( length[ 1 ] );
-        fwrite( &temp, sizeof( W16 ), 1, fout );	// Length Two
-        temp = LittleShort( length[ 2 ] );
-        fwrite( &temp, sizeof( W16 ), 1, fout );	// Length Three
-
-        jmp = ftell( fout );
-
-        temp = 0;
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset One
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Two
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Three
+		fread( name, sizeof( W8 ), 16, map_file_handle );
+		fread( sig, sizeof( W8 ), 4, map_file_handle );
 
 
-        // Map name length
-        temp = strlen( name );
-        fwrite( &temp, sizeof( W16 ), 1, fout );
+		//
+		// Output header
+		//
+		// Map file header signature
+		fwrite( sig, sizeof( W8 ), 4, fout );
 
-        // Music name length
-        temp = strlen( musicName );
-        fwrite( &temp, sizeof( W16 ), 1, fout );
+		// RLE Word tag
+		Rtag = LittleShort( Rtag );
+		fwrite( &Rtag, sizeof( W16 ), 1, fout );
 
-        // Par time Float
-        ftime = LittleFloat( ftime );
-        fwrite( &ftime, sizeof( float ), 1, fout );
+		// Max Width
+		w = LittleShort( w );
+		fwrite( &w, sizeof( W16 ), 1, fout );
 
-        // Par time string
-        fwrite( stime, sizeof( W8 ), 5 , fout );
+		// Max Height
+		h = LittleShort( h );
+		fwrite( &h, sizeof( W16 ), 1, fout );
 
-        // Map name
-        fwrite( name, sizeof( W8 ), strlen( name ), fout );
+		// Ceiling Colour
+		ceiling = LittleLong( ceiling );
+		fwrite( &ceiling, sizeof( W32 ), 1, fout );
 
-        // Music file name
-        fwrite( musicName, sizeof( W8 ), strlen( musicName ), fout );
+		// Floor Colour
+		floor = LittleLong( floor );
+		fwrite( &floor, sizeof( W32 ), 1, fout );
+
+		// Length of layers
+		temp = LittleShort( length[ 0 ] );
+		fwrite( &temp, sizeof( W16 ), 1, fout );	// Length One
+		temp = LittleShort( length[ 1 ] );
+		fwrite( &temp, sizeof( W16 ), 1, fout );	// Length Two
+		temp = LittleShort( length[ 2 ] );
+		fwrite( &temp, sizeof( W16 ), 1, fout );	// Length Three
+
+		jmp = ftell( fout );
+
+		temp = 0;
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset One
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Two
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Three
 
 
+		// Map name length
+		temp = strlen( name );
+		fwrite( &temp, sizeof( W16 ), 1, fout );
+
+		// Music name length
+		temp = strlen( musicName );
+		fwrite( &temp, sizeof( W16 ), 1, fout );
+
+		// Par time Float
+		ftime = LittleFloat( ftime );
+		fwrite( &ftime, sizeof( float ), 1, fout );
+
+		// Par time string
+		fwrite( stime, sizeof( W8 ), 5 , fout );
+
+		// Map name
+		fwrite( name, sizeof( W8 ), strlen( name ), fout );
+
+		// Music file name
+		fwrite( musicName, sizeof( W8 ), strlen( musicName ), fout );
 
 
 
-        data = (PW8) MM_MALLOC( length[ 0 ] );
-        if( data == NULL )
-        {
-            continue;
-        }
-
-        offset[ 0 ] = ftell( fout );
-
-        fseek( map_file_handle, offsetin[ 0 ], SEEK_SET );
-
-        fread( data, 1, length[ 0 ], map_file_handle );
-        fwrite( data, 1, length[ 0 ], fout );
-
-        MM_FREE( data );
 
 
-        data = (PW8) MM_MALLOC( length[ 1 ] );
-        if( data == NULL )
-        {
+		data = (PW8) MM_MALLOC( length[ 0 ] );
+		if( data == NULL )
+		{
+			fclose( fout );
+			continue;
+		}
+
+		offset[ 0 ] = ftell( fout );
+
+		fseek( map_file_handle, offsetin[ 0 ], SEEK_SET );
+
+		fread( data, 1, length[ 0 ], map_file_handle );
+		fwrite( data, 1, length[ 0 ], fout );
+
+		MM_FREE( data );
+
+
+		data = (PW8) MM_MALLOC( length[ 1 ] );
+		if( data == NULL )
+		{
 			MapFile_Shutdown();
+			fclose( fout );
 
-            return 0;
-        }
+			return 0;
+		}
 
-        offset[ 1 ] = ftell( fout );
+		offset[ 1 ] = ftell( fout );
 
-        fseek( map_file_handle, offsetin[ 1 ], SEEK_SET );
+		fseek( map_file_handle, offsetin[ 1 ], SEEK_SET );
 
-        fread( data, 1, length[ 1 ], map_file_handle );
-        fwrite( data, 1, length[ 1 ], fout );
+		fread( data, 1, length[ 1 ], map_file_handle );
+		fwrite( data, 1, length[ 1 ], fout );
 
-        MM_FREE( data );
+		MM_FREE( data );
 
-
-        data = (PW8) MM_MALLOC( length[ 2 ] );
-        if( data == NULL )
-        {
-		MapFile_Shutdown();
-		if(fout)
+		data = (PW8) MM_MALLOC( length[ 2 ] );
+		if( data == NULL )
+		{
+			MapFile_Shutdown();
+			if(fout)
 			fclose(fout);
-		return 0;
-        }
+			return 0;
+		}
 
-        offset[ 2 ] = ftell( fout );
+		offset[ 2 ] = ftell( fout );
 
-        fseek( map_file_handle, offsetin[ 2 ], SEEK_SET );
-        fread( data, 1, length[ 2 ], map_file_handle );
+		fseek( map_file_handle, offsetin[ 2 ], SEEK_SET );
+		fread( data, 1, length[ 2 ], map_file_handle );
 
-        fwrite( data, 1, length[ 2 ], fout );
+		fwrite( data, 1, length[ 2 ], fout );
 
-        MM_FREE( data );
-
-
-        fseek( fout, jmp, SEEK_SET );
-
-        temp = LittleLong( offset[ 0 ] );
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset One
-
-        temp = LittleLong( offset[ 1 ] );
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Two
-
-        temp = LittleLong( offset[ 2 ] );
-        fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Three
+		MM_FREE( data );
 
 
-        fclose( fout );
+		fseek( fout, jmp, SEEK_SET );
 
+		temp = LittleLong( offset[ 0 ] );
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset One
+
+		temp = LittleLong( offset[ 1 ] );
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Two
+
+		temp = LittleLong( offset[ 2 ] );
+		fwrite( &temp, sizeof( W32 ), 1, fout );	// Offset Three
+
+		fclose( fout );
 	}
-
-
 	MapFile_Shutdown();
 
-
 	printf( "Done\n" );
-
-
 	return true;
 }
 
